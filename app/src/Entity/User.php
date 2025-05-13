@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'account')]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email','name'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -21,29 +21,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nom_user = null;
+    private ?string $name = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $bio_user = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $avatar_url_user = null;
+    private ?string $avatarUrl = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $date_creation_user = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -55,114 +49,96 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
-    public function setRoles(array $roles): static
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
 
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        // Clear temporary sensitive data here if needed
     }
 
-    public function getNomUser(): ?string
+    public function getName(): ?string
     {
-        return $this->nom_user;
+        return $this->name;
     }
 
-    public function setNomUser(string $nom_user): static
+    public function setName(string $name): self
     {
-        $this->nom_user = $nom_user;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getBioUser(): ?string
+    public function getBio(): ?string
     {
-        return $this->bio_user;
+        return $this->bio;
     }
 
-    public function setBioUser(string $bio_user): static
+    public function setBio(string $bio): self
     {
-        $this->bio_user = $bio_user;
+        $this->bio = $bio;
 
         return $this;
     }
 
-    public function getAvatarUrlUser(): ?string
+    public function getAvatarUrl(): ?string
     {
-        return $this->avatar_url_user;
+        return $this->avatarUrl;
     }
 
-    public function setAvatarUrlUser(?string $avatar_url_user): static
+    public function setAvatarUrl(?string $avatarUrl): self
     {
-        $this->avatar_url_user = $avatar_url_user;
+        $this->avatarUrl = $avatarUrl;
 
         return $this;
     }
 
-    public function getDateCreationUser(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->date_creation_user;
+        return $this->createdAt;
     }
 
-    public function setDateCreationUser(\DateTimeImmutable $date_creation_user): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
-        $this->date_creation_user = $date_creation_user;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
+    
 }
