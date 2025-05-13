@@ -2,7 +2,14 @@
 
 Exécuter la commande suivante :
 ```bash
-docker-compose up --build -d
+docker-compose up --build -d --build
+```
+Ensuite, installer les dépendances : 
+```bash
+docker exec -it symfony-php bash
+```
+```bash
+composer install
 ```
 
 Le serveur Symfony sera accessible sur :

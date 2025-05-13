@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,6 +31,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $nom_user = null;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $bio_user = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $avatar_url_user = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $date_creation_user = null;
 
     public function getId(): ?int
     {
@@ -102,5 +115,53 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getNomUser(): ?string
+    {
+        return $this->nom_user;
+    }
+
+    public function setNomUser(string $nom_user): static
+    {
+        $this->nom_user = $nom_user;
+
+        return $this;
+    }
+
+    public function getBioUser(): ?string
+    {
+        return $this->bio_user;
+    }
+
+    public function setBioUser(string $bio_user): static
+    {
+        $this->bio_user = $bio_user;
+
+        return $this;
+    }
+
+    public function getAvatarUrlUser(): ?string
+    {
+        return $this->avatar_url_user;
+    }
+
+    public function setAvatarUrlUser(?string $avatar_url_user): static
+    {
+        $this->avatar_url_user = $avatar_url_user;
+
+        return $this;
+    }
+
+    public function getDateCreationUser(): ?\DateTimeImmutable
+    {
+        return $this->date_creation_user;
+    }
+
+    public function setDateCreationUser(\DateTimeImmutable $date_creation_user): static
+    {
+        $this->date_creation_user = $date_creation_user;
+
+        return $this;
     }
 }
