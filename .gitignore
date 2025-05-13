@@ -5,15 +5,34 @@
 /app/.env.local.php
 /app/.DS_Store
 
-# Docker volumes / logs
+# Ignore les fichiers de cache générés
+/app/public/test.php
+/app/public/bundles/
+/app/phpunit.xml
+
+# Docker volumes et fichiers temporaires
+docker-compose.override.yml
 *.log
 *.lock
-docker-compose.override.yml
+*.pid
+*.sock
 
-# IDEs
+# Evite d'ignorer composer.lock si tu veux des installs identiques pour tout le monde
+# !/app/composer.lock
+
+# .env exemple à committer
+# => on ignore seulement les fichiers sensibles, pas le .env général
+/app/.env.local
+!/app/.env
+
+# IDEs et fichiers d'éditeur
 .vscode/
 .idea/
 *.swp
+*.swo
 
-# Node/Yarn (si jamais tu fais du front)
+# Node/Yarn (si tu ajoutes un front)
 node_modules/
+dist/
+build/
+public/build/
