@@ -1,0 +1,131 @@
+body {
+    background: linear-gradient(to right, #00c6ff, #1DA1F2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    position: relative;
+}
+
+.background-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.circle1 {
+    position: absolute;
+    top: 10%;
+    left: 20%;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: -1;
+}
+
+.circle2 {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: -1;
+}
+
+.wave {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.mouse-logo {
+    width: 100px;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    color: #1DA1F2;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.form-label {
+    text-align: left;
+    display: block;
+    margin-bottom: .5rem;
+    font-weight: 600;
+    color: #14171A;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ccd6dd;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-twitter {
+    background-color: #1DA1F2;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn-twitter:hover {
+    background-color: #0d8ddb;
+}
+
+.alert-danger {
+    background-color: #ffe0e0;
+    border: 1px solid #ffb3b3;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #a94442;
+}
+
+.login-link {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #14171A;
+}
+
+.login-link a {
+    text-decoration: none;
+    color: #1DA1F2;
+    font-weight: bold;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
