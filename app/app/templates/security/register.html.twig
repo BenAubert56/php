@@ -8,53 +8,51 @@
 {% endblock %}
 
 {% block body %}
-<div class="background-elements">
-    <div class="circle1"></div>
-    <div class="circle2"></div>
-    <div class="wave"></div>
-</div>
+    <div class="background-elements">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <div class="wave"></div>
+    </div>
 
-<div class="register-wrapper">
-    <div class="register-card">
-        <img class="mouse-logo" src="{{ asset('images/mouseIcon.png') }}" alt="Mouse Icon">
+    <div class="register-wrapper">
+        <div class="register-card">
+            <img class="mouse-logo" src="{{ asset('images/mouseIcon.png') }}" alt="Mouse Icon">
 
-        <h2>Inscription</h2>
+            <h2>Inscription</h2>
 
-        {% if error %}
-            <div class="alert alert-danger">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
+            {% if error %}
+                <div class="alert alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                <div class="text-start">
+                    <label for="username" class="form-label">Nom d'utilisateur</label>
+                    <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" required autofocus>
+                </div>
+
+                <div class="text-start">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" value="{{ last_email }}" name="_email" id="email" class="form-control" required>
+                </div>
+
+                <div class="text-start">
+                    <label for="password" class="form-label">Mot de passe</label>
+                    <input type="password" name="_password" id="password" class="form-control" required>
+                </div>
+
+                <div class="text-start">
+                    <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
+                    <input type="password" name="_confirm_password" id="confirm_password" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-twitter">S'inscrire</button>
+            </form>
+
+            <div class="login-link">
+                <p>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
             </div>
-        {% endif %}
-
-        <form method="post">
-            <div class="text-start">
-                <label for="username" class="form-label">Nom d'utilisateur</label>
-                <input type="text" value="{{ last_username }}" name="_username" id="username" class="form-control" required autofocus>
-            </div>
-
-            <div class="text-start">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" value="{{ last_email }}" name="_email" id="email" class="form-control" required>
-            </div>
-
-            <div class="text-start">
-                <label for="password" class="form-label">Mot de passe</label>
-                <input type="password" name="_password" id="password" class="form-control" required>
-            </div>
-
-            <div class="text-start">
-                <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
-                <input type="password" name="_confirm_password" id="confirm_password" class="form-control" required>
-            </div>
-
-            <button type="submit" class="btn btn-twitter">S'inscrire</button>
-        </form>
-
-        <div class="login-link">
-            <p>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a></p>
         </div>
     </div>
-</div>
 {% endblock %}
-
-

@@ -19,13 +19,13 @@ class SecurityController extends AbstractController
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
+            'current_page' => 'login', // ✅ ajouté
         ]);
     }
 
     #[Route(path: '/register', name: 'app_register')]
     public function register(Request $request): Response
     {
-        // Pour l'instant, on simule juste un formulaire sans traitement backend.
         $lastUsername = $request->get('_username', '');
         $lastEmail = $request->get('_email', '');
 
@@ -33,6 +33,7 @@ class SecurityController extends AbstractController
             'last_username' => $lastUsername,
             'last_email' => $lastEmail,
             'error' => null,
+            'current_page' => 'register', // ✅ ajouté
         ]);
     }
 
