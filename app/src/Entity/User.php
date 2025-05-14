@@ -11,8 +11,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'account')]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email','name'])]
+#[ORM\Table(name: 'account', uniqueConstraints: [
+    new ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL_NAME', columns: ['email', 'name'])
+])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -41,50 +42,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    /**
-     * @var Collection<int, Tweet>
-     */
-    #[ORM\OneToMany(targetEntity: Tweet::class, mappedBy: 'author')]
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Tweet::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $tweets;
 
-    /**
-     * @var Collection<int, Retweet>
-     */
-    #[ORM\OneToMany(targetEntity: Retweet::class, mappedBy: 'user')]
-    private Collection $tweet;
-
-    /**
-     * @var Collection<int, Comment>
-     */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'author')]
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Comment::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $comments;
 
-    /**
-     * @var Collection<int, Like>
-     */
-    #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'user')]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Like::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $likes;
 
-    /**
-     * @var Collection<int, Follow>
-     */
-    #[ORM\OneToMany(targetEntity: Follow::class, mappedBy: 'follower')]
-    private Collection $follows;
+    #[ORM\OneToMany(mappedBy: 'follower', targetEntity: Follow::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $following;
 
-    /**
-     * @var Collection<int, Follow>
-     */
-    #[ORM\OneToMany(targetEntity: Follow::class, mappedBy: 'following')]
-    private Collection $followings;
+    #[ORM\OneToMany(mappedBy: 'following', targetEntity: Follow::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $followers;
 
     public function __construct()
     {
         $this->tweets = new ArrayCollection();
-        $this->tweet = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
-        $this->follows = new ArrayCollection();
-        $this->followings = new ArrayCollection();
+        $this->following = new ArrayCollection();
+        $this->followers = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -100,7 +80,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -113,14 +92,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
-
         return $this;
     }
 
@@ -132,13 +109,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
-
         return $this;
     }
 
     public function eraseCredentials(): void
     {
-        // Clear temporary sensitive data here if needed
+        // Implémentation si tu stockes des données sensibles temporaires
     }
 
     public function getName(): ?string
@@ -149,7 +125,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -158,10 +133,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->bio;
     }
 
-    public function setBio(string $bio): self
+    public function setBio(?string $bio): self
     {
         $this->bio = $bio;
-
         return $this;
     }
 
@@ -173,7 +147,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatarUrl(?string $avatarUrl): self
     {
         $this->avatarUrl = $avatarUrl;
-
         return $this;
     }
 
@@ -185,166 +158,55 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Tweet>
-     */
+    /** @return Collection<int, Tweet> */
     public function getTweets(): Collection
     {
         return $this->tweets;
     }
 
-    public function addTweet(Tweet $tweet): static
+    public function addTweet(Tweet $tweet): self
     {
         if (!$this->tweets->contains($tweet)) {
             $this->tweets->add($tweet);
             $tweet->setAuthor($this);
         }
-
         return $this;
     }
 
-    public function removeTweet(Tweet $tweet): static
+    public function removeTweet(Tweet $tweet): self
     {
         if ($this->tweets->removeElement($tweet)) {
-            // set the owning side to null (unless already changed)
             if ($tweet->getAuthor() === $this) {
                 $tweet->setAuthor(null);
             }
         }
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Retweet>
-     */
-    public function getTweet(): Collection
-    {
-        return $this->tweet;
-    }
-
-    /**
-     * @return Collection<int, Comment>
-     */
+    /** @return Collection<int, Comment> */
     public function getComments(): Collection
     {
         return $this->comments;
     }
 
-    public function addComment(Comment $comment): static
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setAuthor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comment $comment): static
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getAuthor() === $this) {
-                $comment->setAuthor(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Like>
-     */
+    /** @return Collection<int, Like> */
     public function getLikes(): Collection
     {
         return $this->likes;
     }
 
-    public function addLike(Like $like): static
+    /** @return Collection<int, Follow> */
+    public function getFollowing(): Collection
     {
-        if (!$this->likes->contains($like)) {
-            $this->likes->add($like);
-            $like->setUser($this);
-        }
-
-        return $this;
+        return $this->following;
     }
 
-    public function removeLike(Like $like): static
+    /** @return Collection<int, Follow> */
+    public function getFollowers(): Collection
     {
-        if ($this->likes->removeElement($like)) {
-            // set the owning side to null (unless already changed)
-            if ($like->getUser() === $this) {
-                $like->setUser(null);
-            }
-        }
-
-        return $this;
+        return $this->followers;
     }
-
-    /**
-     * @return Collection<int, Follow>
-     */
-    public function getFollows(): Collection
-    {
-        return $this->follows;
-    }
-
-    public function addFollow(Follow $follow): static
-    {
-        if (!$this->follows->contains($follow)) {
-            $this->follows->add($follow);
-            $follow->setFollower($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollow(Follow $follow): static
-    {
-        if ($this->follows->removeElement($follow)) {
-            // set the owning side to null (unless already changed)
-            if ($follow->getFollower() === $this) {
-                $follow->setFollower(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Follow>
-     */
-    public function getFollowings(): Collection
-    {
-        return $this->followings;
-    }
-
-    public function addFollowing(Follow $following): static
-    {
-        if (!$this->followings->contains($following)) {
-            $this->followings->add($following);
-            $following->setFollowing($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFollowing(Follow $following): static
-    {
-        if ($this->followings->removeElement($following)) {
-            // set the owning side to null (unless already changed)
-            if ($following->getFollowing() === $this) {
-                $following->setFollowing(null);
-            }
-        }
-
-        return $this;
-    }
-    
 }
