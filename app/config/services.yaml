@@ -20,12 +20,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-    App\EventListener\JWTCreatedListener:
-        tags:
-            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_created, method: onJWTCreated }
-
     Lexik\Bundle\JWTAuthenticationBundle\Security\Authenticator\JWTAuthenticator:
         arguments:
             $tokenExtractor: '@lexik_jwt_authentication.extractor.chain_extractor'

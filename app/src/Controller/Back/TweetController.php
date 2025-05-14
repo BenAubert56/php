@@ -19,7 +19,6 @@ class TweetController extends AbstractController
     public function __construct(private TweetService $tweetService) {}
 
     #[Route('/tweets', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
     public function index(): JsonResponse
     {
         $tweets = $this->tweetService->getAllTweets();
