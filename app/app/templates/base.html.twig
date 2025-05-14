@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-
         .mouse-logo {
             width: 90px;
         }
@@ -20,22 +19,16 @@
             text-decoration: none !important;
             font-weight: bold;
         }
-        
+
         .nav-link i {
             font-size: 1.2rem;
             margin-right: 8px;
             color: black;
         }
 
-
         .nav-link.active {
             font-weight: bold;
             color: #1DA1F2 !important;
-        }
-
-        .nav-link i {
-            margin-right: 8px;
-            color: black;
         }
 
         .btn-twitter {
@@ -64,39 +57,43 @@
 {% else %}
     <div class="container-fluid">
         <div class="row">
-            <nav class="col-md-3 col-lg-2 d-md-block bg-white border-end vh-100 p-3">
-                <img class="mouse-logo d-block mx-auto" src="{{ asset('images/mouseIcon.png') }}" alt="Mouse Icon">
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if current_page == 'home' %}active{% endif %}" href="#">
-                            <i class="bi bi-house"></i> Accueil
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if current_page == 'explore' %}active{% endif %}" href="#">
-                            <i class="bi bi-search"></i> Explorer
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if current_page == 'notifications' %}active{% endif %}" href="#">
-                            <i class="bi bi-bell"></i> Notifications
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if current_page == 'messages' %}active{% endif %}" href="#">
-                            <i class="bi bi-envelope"></i> Messages
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a class="nav-link {% if current_page == 'profile' %}active{% endif %}" href="#">
-                            <i class="bi bi-person"></i> Profil
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-twitter w-100" href="#">Tweeter</a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="col-md-3 col-lg-2 d-md-block bg-white border-end vh-100 p-3 d-flex flex-column justify-content-between">
+            {# This element is a flex item, i.e. a child of a flex container, but justify-content only applies to containers.
+Try setting the justify-content on the container element or use justify-self instead. #}
+                <div>
+                    <img class="mouse-logo d-block mx-auto mb-4" src="{{ asset('images/mouseIcon.png') }}" alt="Mouse Icon">
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link {% if current_page == 'home' %}active{% endif %}" href="#">
+                                <i class="bi bi-house"></i> Accueil
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link {% if current_page == 'explore' %}active{% endif %}" href="#">
+                                <i class="bi bi-search"></i> Explorer
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link {% if current_page == 'notifications' %}active{% endif %}" href="#">
+                                <i class="bi bi-bell"></i> Notifications
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link {% if current_page == 'messages' %}active{% endif %}" href="#">
+                                <i class="bi bi-envelope"></i> Messages
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link {% if current_page == 'profile' %}active{% endif %}" href="#">
+                                <i class="bi bi-person"></i> Profil
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-twitter w-100" href="#">Tweeter</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
             <aside class="d-none d-lg-block col-lg-4 p-4">
                 {% block sidebar_right %}{% endblock %}
