@@ -13,11 +13,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[OA\Tag('Tweets')]
 #[Route('/api')]
 class TweetController extends AbstractController
 {
     public function __construct(private TweetService $tweetService) {}
 
+    /**
+     * @OA\Get(
+     *     path="/api/tweets",
+     *     summary="Liste tous les tweets",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Liste des tweets",
+     *         @OA\JsonContent(type="array", @OA\Items(ref=@Model(type=App\Entity\Tweet::class, groups={"tweet:read"})))
+     *     )
+     * )
+     */
     #[Route('/tweets', methods: ['GET'])]
     public function index(): JsonResponse
     {
