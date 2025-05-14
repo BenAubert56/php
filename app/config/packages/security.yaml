@@ -6,7 +6,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: email
+                property: id
 
     firewalls:
         dev:
@@ -18,7 +18,6 @@ security:
             stateless: true
             provider: app_user_provider
             jwt: ~
-                
 
             json_login:
                 check_path: /api/login
