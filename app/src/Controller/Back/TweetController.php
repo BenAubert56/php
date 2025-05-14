@@ -26,6 +26,15 @@ class TweetController extends AbstractController
         return $this->json($tweets, 200, [], ['groups' => 'tweet:read']);
     }
 
+    #[Route('/check-token', methods: ['GET'])]
+    public function check(): JsonResponse
+    {
+        return $this->json([
+            'user' => $this->getUser()?->getEmail(),
+            'success' => true,
+        ]);
+    }
+    
     #[Route('/tweets/{id}', methods: ['GET'])]
     public function show(Tweet $tweet): JsonResponse
     {
