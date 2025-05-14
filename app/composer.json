@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.3.3",
         "lexik/jwt-authentication-bundle": "^3.1.1",
+        "nelmio/api-doc-bundle": "^5.0",
         "symfony/asset": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
@@ -77,6 +78,11 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.63"
+        "phpdocumentor/reflection-docblock": "^5.6",
+        "phpstan/phpdoc-parser": "^2.1",
+        "symfony/maker-bundle": "^1.63",
+        "symfony/property-access": "7.2.*",
+        "symfony/property-info": "7.2.*",
+        "symfony/serializer": "7.2.*"
     }
 }
