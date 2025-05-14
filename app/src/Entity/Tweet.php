@@ -14,16 +14,20 @@ class Tweet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['tweet:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['tweet:read'])]
     private ?string $content = null;
 
     #[ORM\Column]
+    #[Groups(['tweet:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tweets')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Groups(['tweet:read'])]
     private ?User $author = null;
 
     #[ORM\OneToMany(mappedBy: 'tweet', targetEntity: Retweet::class, orphanRemoval: true, cascade: ['remove'])]

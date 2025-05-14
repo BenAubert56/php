@@ -78,4 +78,13 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('account_index');
     }
+
+    #[Route('/test-token', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function test(): JsonResponse
+    {
+        return $this->json([
+            'email' => $this->getUser()?->getEmail()
+        ]);
+    }
 }
