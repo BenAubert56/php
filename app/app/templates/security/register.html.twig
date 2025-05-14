@@ -22,9 +22,14 @@
 
             {% if error %}
                 <div class="alert alert-danger">
-                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                    {% if error.messageKey is defined %}
+                        {{ error.messageKey|trans(error.messageData ?? {}, 'security') }}
+                    {% else %}
+                        {{ error }}
+                    {% endif %}
                 </div>
             {% endif %}
+
 
             <form method="post">
                 <div class="text-start">
