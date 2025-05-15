@@ -15,29 +15,20 @@ class RetweetRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Retweet::class);
     }
-
-//    /**
-//     * @return Retweet[] Returns an array of Retweet objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('r.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Retweet
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    
+    public function searchRetweetsByTweetContentOrUser(string $q): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.tweet', 't')
+            ->join('t.author', 'a')
+            ->join('r.user', 'retweeter')
+            ->where('LOWER(t.content) LIKE :term')
+            ->orWhere('LOWER(a.name) LIKE :term')
+            ->orWhere('LOWER(retweeter.name) LIKE :term')
+            ->orWhere('LOWER(retweeter.email) LIKE :term') // ou getUserIdentifier()
+            ->setParameter('term', '%' . strtolower($q) . '%')
+            ->orderBy('r.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

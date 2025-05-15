@@ -26,12 +26,14 @@ class TweetController extends AbstractController
 
     #[Route('/tweets', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Get(summary: 'Liste tous les tweets')]
-    public function index(): JsonResponse
+    #[OA\Get(summary: 'Liste tous les tweets (optionnellement filtrés par recherche)')]
+    public function index(Request $request): JsonResponse
     {
+        $query = $request->query->get('q');
         $currentUser = $this->getUser();
-        $tweets = $this->tweetService->getAllTweets($currentUser);
-        return $this->json($tweets);     
+
+        $tweets = $this->tweetService->getAllTweets($currentUser, $query);
+        return $this->json($tweets);
     }
 
     #[Route('/tweets/{id}', methods: ['GET'])]
@@ -121,4 +123,5 @@ class TweetController extends AbstractController
         $this->tweetService->deleteTweet($tweet);
         return $this->json(new MessageResponse('Tweet supprimé avec succès !'), 200);
     }
+
 }

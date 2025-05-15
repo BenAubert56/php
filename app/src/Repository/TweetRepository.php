@@ -42,4 +42,27 @@ class TweetRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function searchByContent(string $term): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('LOWER(t.content) LIKE :term')
+            ->setParameter('term', '%' . strtolower($term) . '%')
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function searchByContentOrAuthor(string $q): array
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.author', 'a')
+            ->where('LOWER(t.content) LIKE :term')
+            ->orWhere('LOWER(a.name) LIKE :term')
+            ->orWhere('LOWER(a.email) LIKE :term') // ou username si c'est getUserIdentifier()
+            ->setParameter('term', '%' . strtolower($q) . '%')
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }
