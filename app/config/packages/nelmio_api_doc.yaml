@@ -5,6 +5,11 @@ nelmio_api_doc:
             description: La documentation de l’API des tweets
             version: 1.0.0
         components:
+            schemas:
+                TweetResponse: 
+                    $ref: '../../src/Response/TweetResponse.php'
+                AuthorResponse:
+                    $ref: '../../src/Response/AuthorResponse.php'
             securitySchemes:
                 BearerAuth:
                     type: http
@@ -15,3 +20,5 @@ nelmio_api_doc:
     areas: # to filter documented areas
         path_patterns:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
+
+            

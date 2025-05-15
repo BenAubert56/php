@@ -12,7 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.3.3",
         "lexik/jwt-authentication-bundle": "^3.1.1",
-        "nelmio/api-doc-bundle": "^5.0",
+        "nelmio/api-doc-bundle": "^4.7",
         "symfony/asset": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",

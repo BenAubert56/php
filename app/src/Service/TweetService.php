@@ -6,13 +6,12 @@ use App\Entity\Tweet;
 use App\Entity\User;
 use App\Repository\TweetRepository;
 use App\Repository\RetweetRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class TweetService
 {
     public function __construct(
-        private EntityManagerInterface $em,
-        private TweetRepository $tweetRepository
+        private TweetRepository $tweetRepository,
+        private RetweetRepository $retweetRepository
     ) {}
 
     public function createTweet(string $content, User $author): Tweet
@@ -22,8 +21,7 @@ class TweetService
         $tweet->setAuthor($author);
         $tweet->setCreatedAt(new \DateTimeImmutable());
 
-        $this->em->persist($tweet);
-        $this->em->flush();
+        $this->tweetRepository->save($tweet);
 
         return $tweet;
     }
@@ -31,14 +29,14 @@ class TweetService
     public function updateTweet(Tweet $tweet, string $content): Tweet
     {
         $tweet->setContent($content);
-        $this->em->flush();
+        $this->tweetRepository->save($tweet);
+
         return $tweet;
     }
 
     public function deleteTweet(Tweet $tweet): void
     {
-        $this->em->remove($tweet);
-        $this->em->flush();
+        $this->tweetRepository->remove($tweet);
     }
 
     public function getAllTweets(): array
@@ -51,11 +49,11 @@ class TweetService
         return $this->tweetRepository->findByUser($user);
     }
 
-    public function getUserTimeline(User $user, RetweetRepository $retweetRepo): array
+    public function getUserTimeline(User $user): array
     {
         $originalTweets = $this->tweetRepository->findByUser($user);
 
-        $retweets = $retweetRepo->findBy(['user' => $user]);
+        $retweets = $this->retweetRepository->findBy(['user' => $user]);
         $retweetTweets = array_map(fn($retweet) => $retweet->getTweet(), $retweets);
 
         $merged = [];
