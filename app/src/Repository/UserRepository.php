@@ -18,17 +18,17 @@ class UserRepository extends ServiceEntityRepository
 
     public function save(User $user, bool $flush = true): void
     {
-        $this->_em->persist($user);
+        $this->getEntityManager()->persist($user);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
     public function remove(User $user, bool $flush = true): void
     {
-        $this->_em->remove($user);
+        $this->getEntityManager()->remove($user);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()>flush();
         }
     }
 }

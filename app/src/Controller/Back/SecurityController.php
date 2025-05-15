@@ -28,15 +28,21 @@ class SecurityController extends AbstractController
     #[OA\Post(summary: 'Inscription utilisateur')]
     public function register(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
         try {
+            $data = json_decode($request->getContent(), true);
+
+            if (!is_array($data)) {
+                throw new InvalidRegistrationDataException('Invalid JSON body');
+            }
+
             $this->registrationService->register($data);
             return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
         } catch (InvalidRegistrationDataException | \TypeError $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (UserAlreadyExistsException $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
+        } catch (\Throwable $e) {
+            return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 

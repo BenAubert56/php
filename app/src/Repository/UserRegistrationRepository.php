@@ -9,7 +9,7 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<User>
  */
-class UserRepository extends ServiceEntityRepository
+class UserRegistrationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -28,9 +28,9 @@ class UserRepository extends ServiceEntityRepository
 
     public function save(User $user, bool $flush = true): void
     {
-        $this->_em->persist($user);
+        $this->getEntityManager()->persist($user);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 }

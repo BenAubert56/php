@@ -5,16 +5,16 @@ namespace App\Service;
 use App\Entity\User;
 use App\Exception\UserAlreadyExistsException;
 use App\Exception\InvalidRegistrationDataException;
-use App\Repository\UserRepository;
+use App\Repository\UserRegistrationRepository;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserRegistrationService
 {
-    private UserRepository $userRepository;
+    private UserRegistrationRepository $userRepository;
     private UserPasswordHasherInterface $passwordHasher;
 
     public function __construct(
-        UserRepository $userRepository,
+        UserRegistrationRepository $userRepository,
         UserPasswordHasherInterface $passwordHasher
     ) {
         $this->userRepository = $userRepository;
