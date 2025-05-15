@@ -53,17 +53,44 @@ class TweetService
     public function getAllTweets(?User $currentUser = null): array
     {
         $tweets = $this->tweetRepository->findBy([], ['createdAt' => 'DESC']);
+        $retweets = $this->retweetRepository->findAll();
+
+        $combined = [];
+
+        // Tweets classiques
+        foreach ($tweets as $tweet) {
+            $combined[] = [
+                'tweet' => $tweet,
+                'date' => $tweet->getCreatedAt(),
+                'isRetweet' => false
+            ];
+        }
+
+        // Retweets (ajoutés avec leur date de retweet)
+        foreach ($retweets as $retweet) {
+            $combined[] = [
+                'tweet' => $retweet->getTweet(),
+                'date' => $retweet->getCreatedAt(), // 📅 très important
+                'isRetweet' => true
+            ];
+        }
+
+        // Tri par date décroissante
+        usort($combined, fn($a, $b) => $b['date'] <=> $a['date']);
+
         $responses = [];
 
-        foreach ($tweets as $tweet) {
-            $likeCount = count($tweet->getLikes()); 
+        foreach ($combined as $item) {
+            $tweet = $item['tweet'];
+            $likeCount = count($tweet->getLikes());
             $likedByCurrentUser = $currentUser ? $tweet->isLikedBy($currentUser) : false;
-            $commentResponses = array_map(
-                fn($comment) => new CommentResponse($comment),
-                $tweet->getComments()->toArray()
-            );
 
-            $responses[] = new TweetResponse($tweet, $likeCount, $likedByCurrentUser, $commentResponses);
+            $responses[] = new TweetResponse(
+                $tweet,
+                $likeCount,
+                $likedByCurrentUser,
+                $item['isRetweet']
+            );
         }
 
         return $responses;

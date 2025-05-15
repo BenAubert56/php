@@ -31,7 +31,11 @@ class TweetResponse
     #[OA\Property(type: 'boolean', example: true)]
     public bool $likedByCurrentUser;
 
-    public function __construct(Tweet $tweet, int $likeCount = 0, bool $likedByCurrentUser = false)
+    #[OA\Property(type: 'boolean', example: false)]
+    public bool $isRetweet = false;
+
+    public function __construct(Tweet $tweet, int $likeCount = 0, bool $likedByCurrentUser = false,
+    bool $isRetweet = false)
     {
         $this->id = $tweet->getId();
         $this->content = $tweet->getContent();
@@ -46,5 +50,6 @@ class TweetResponse
         foreach ($tweet->getComments() as $comment) {
             $this->comments[] = new CommentResponse($comment);
         }
+        $this->isRetweet = $isRetweet;
     }
 }
