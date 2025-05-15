@@ -9,7 +9,12 @@ use App\Repository\LikeRepository;
 
 class LikeService
 {
-    public function __construct(private LikeRepository $likeRepository) {}
+    private LikeRepository $likeRepository;
+
+    public function __construct(LikeRepository $likeRepository) 
+    {
+        $this->likeRepository = $likeRepository;
+    }
 
     public function likeTweet(User $user, Tweet $tweet): bool
     {

@@ -10,10 +10,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserRegistrationService
 {
+    private UserRepository $userRepository;
+    private UserPasswordHasherInterface $passwordHasher;
+
     public function __construct(
-        private UserRepository $userRepository,
-        private UserPasswordHasherInterface $passwordHasher
-    ) {}
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher
+    ) {
+        $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
+    }
 
     public function register(array $data): void
     {

@@ -6,14 +6,21 @@ use App\Dto\Request\CreateUserRequest;
 use App\Dto\Request\UpdateUserRequest;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Symfony\Component\PasswordHasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
 {
+    private UserRepository $userRepository;
+    private UserPasswordHasherInterface $passwordHasher;
+
     public function __construct(
-        private UserRepository $userRepository,
-        private UserPasswordHasherInterface $passwordHasher
-    ) {}
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher
+    ) 
+    {
+        $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
+    }
 
     public function list(): array
     {

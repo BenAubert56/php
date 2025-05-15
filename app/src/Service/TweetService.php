@@ -9,10 +9,17 @@ use App\Repository\RetweetRepository;
 
 class TweetService
 {
+    private TweetRepository $tweetRepository;
+    private RetweetRepository $retweetRepository;
+
     public function __construct(
-        private TweetRepository $tweetRepository,
-        private RetweetRepository $retweetRepository
-    ) {}
+        TweetRepository $tweetRepository,
+        RetweetRepository $retweetRepository
+    ) 
+    {
+        $this->tweetRepository = $tweetRepository;
+        $this->retweetRepository = $retweetRepository;
+    }
 
     public function createTweet(string $content, User $author): Tweet
     {
