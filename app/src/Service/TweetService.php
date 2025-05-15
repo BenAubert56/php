@@ -6,8 +6,10 @@ use App\Entity\Tweet;
 use App\Entity\User;
 use App\Repository\TweetRepository;
 use App\Repository\RetweetRepository;
+use App\Response\Comment\CommentResponse;
 use App\Response\TweetResponse;
 use App\Response\AuthorResponse;
+
 
 class TweetService
 {
@@ -48,11 +50,23 @@ class TweetService
         $this->tweetRepository->remove($tweet);
     }
 
-    public function getAllTweets(): array
+    public function getAllTweets(?User $currentUser = null): array
     {
         $tweets = $this->tweetRepository->findBy([], ['createdAt' => 'DESC']);
+        $responses = [];
 
-        return array_map(fn($tweet) => new TweetResponse($tweet), $tweets);
+        foreach ($tweets as $tweet) {
+            $likeCount = count($tweet->getLikes()); 
+            $likedByCurrentUser = $currentUser ? $tweet->isLikedBy($currentUser) : false;
+            $commentResponses = array_map(
+                fn($comment) => new CommentResponse($comment),
+                $tweet->getComments()->toArray()
+            );
+
+            $responses[] = new TweetResponse($tweet, $likeCount, $likedByCurrentUser, $commentResponses);
+        }
+
+        return $responses;
     }
 
     public function getUserTweets(User $user): array

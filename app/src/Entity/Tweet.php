@@ -176,4 +176,14 @@ class Tweet
 
         return $this;
     }
+
+    public function isLikedBy(User $user): bool
+    {
+        foreach ($this->likes as $like) {
+            if ($like->getUser() === $user) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

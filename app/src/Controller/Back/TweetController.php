@@ -28,8 +28,9 @@ class TweetController extends AbstractController
     #[OA\Get(summary: 'Liste tous les tweets')]
     public function index(): JsonResponse
     {
-        $tweets = $this->tweetService->getAllTweets();
-        return $this->json($tweets);    
+        $currentUser = $this->getUser();
+        $tweets = $this->tweetService->getAllTweets($currentUser);
+        return $this->json($tweets);     
     }
 
     #[Route('/tweets/{id}', methods: ['GET'])]
