@@ -32,29 +32,15 @@ class UserController extends AbstractController
     public function index(): JsonResponse
     {
         $users = $this->userService->list();
-        return $this->json($users, 200, [], ['groups' => 'user:read']);
+        return $this->json($users);     
     }
 
     #[Route('/users/{id}', methods: ['GET'])]
     #[OA\Get(summary: 'Afficher un utilisateur')]
     public function show(User $user): JsonResponse
     {
-        return $this->json($user, 200, [], ['groups' => 'user:read']);
-    }
-
-    #[Route('/users', methods: ['POST'])]
-    #[OA\Post(summary: 'Créer un utilisateur')]
-    public function create(Request $request, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
-    {
-        $dto = $serializer->deserialize($request->getContent(), CreateUserRequest::class, 'json');
-        $errors = $validator->validate($dto);
-
-        if (count($errors) > 0) {
-            return $this->json(['errors' => (string) $errors], 400);
-        }
-
-        $user = $this->userService->createFromDto($dto);
-        return $this->json($user, 201, [], ['groups' => 'user:read']);
+        $response = $this->userService->getResponseByUser($user);
+        return $this->json($response);
     }
 
     #[Route('/users/{id}', methods: ['PUT'])]
@@ -69,7 +55,8 @@ class UserController extends AbstractController
         }
 
         $user = $this->userService->updateFromDto($user, $dto);
-        return $this->json($user, 200, [], ['groups' => 'user:read']);
+        $response = $this->userService->getResponseByUser($user);
+        return $this->json($response);
     }
 
     #[Route('/users/{id}', methods: ['DELETE'])]
@@ -77,14 +64,6 @@ class UserController extends AbstractController
     public function delete(User $user): JsonResponse
     {
         $this->userService->delete($user);
-        return $this->json(null, 204);
-    }
-
-    #[Route('/test-token', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    #[OA\Get(summary: 'Tester un token JWT')]
-    public function test(): JsonResponse
-    {
-        return $this->json(['email' => $this->getUser()?->getEmail()]);
+        return $this->json(new MessageResponse('Utilisateur supprimé avec succès !'), 200);
     }
 }

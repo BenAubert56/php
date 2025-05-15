@@ -25,10 +25,10 @@ class LikeController extends AbstractController
         $user = $this->getUser();
 
         if ($this->likeService->likeTweet($user, $tweet)) {
-            return $this->json(['message' => 'Tweet Liké'], 201);
+            return $this->json(new MessageResponse('Tweet liké avec succès !'), 201);
         }
 
-        return $this->json(['message' => 'Tweet déjà liké'], 400);
+        return $this->json(new MessageResponse('Tweet déjà liké'), 400);
     }
 
     #[Route('/tweets/{id}/unlike', name: 'tweet_unlike', methods: ['DELETE'])]
@@ -39,9 +39,9 @@ class LikeController extends AbstractController
         $user = $this->getUser();
 
         if ($this->likeService->unlikeTweet($user, $tweet)) {
-            return $this->json(['message' => 'Tweet dislilked'], 200);
+            return $this->json(new MessageResponse('Tweet disliké avec succès !'), 200);
         }
 
-        return $this->json(['message' => 'Like non trouvé'], 404);
+        return $this->json(new MessageResponse('Like non trouvé'), 404);
     }
 }

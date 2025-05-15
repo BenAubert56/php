@@ -6,6 +6,7 @@ use App\Dto\Request\CreateUserRequest;
 use App\Dto\Request\UpdateUserRequest;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Response\User\UserResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserService
@@ -24,7 +25,12 @@ class UserService
 
     public function list(): array
     {
-        return $this->userRepository->findAll();
+        $users = $this->userRepository->findAll();
+
+        return array_map(
+            fn(User $user) => new UserResponse($user->getId(), $user->getEmail(), $user->getName()),
+            $users
+        );
     }
 
     public function createFromDto(CreateUserRequest $dto): User
@@ -59,5 +65,14 @@ class UserService
     public function delete(User $user): void
     {
         $this->userRepository->remove($user);
+    }
+
+    public function getResponseByUser(User $user): UserResponse
+    {
+        return new UserResponse(
+            $user->getId(),
+            $user->getEmail(),
+            $user->getName()
+        );
     }
 }

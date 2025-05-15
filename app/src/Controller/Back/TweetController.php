@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Dto\Response\MessageResponse;
 use OpenApi\Attributes as OA;
 
 #[OA\Tag(name: 'Tweets')]
@@ -38,7 +39,11 @@ class TweetController extends AbstractController
     #[OA\Get(summary: 'Afficher un tweet')]
     public function show(Tweet $tweet): JsonResponse
     {
-        return $this->json($tweet);
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
+        $response = $this->tweetService->getResponseByTweet($tweet, $currentUser);
+        return $this->json($response);
     }
 
     #[Route('/users/{id}/tweets', methods: ['GET'])]
@@ -46,7 +51,9 @@ class TweetController extends AbstractController
     #[OA\Get(summary: 'Liste les tweets d’un utilisateur')]
     public function userTweets(User $user): JsonResponse
     {
-        $tweets = $this->tweetService->getUserTweets($user);
+        $currentUser = $this->getUser();
+
+        $tweets = $this->tweetService->getUserTweets($user, $currentUser);
         return $this->json($tweets);
     }
 
@@ -55,7 +62,9 @@ class TweetController extends AbstractController
     #[OA\Get(summary: 'Timeline utilisateur')]
     public function timeline(User $user, RetweetRepository $retweetRepo): JsonResponse
     {
-        $tweets = $this->tweetService->getUserTimeline($user, $retweetRepo);
+        $currentUser = $this->getUser();
+
+        $tweets = $this->tweetService->getUserTimeline($user, $currentUser);
         return $this->json($tweets);
     }
 
@@ -80,7 +89,10 @@ class TweetController extends AbstractController
     #[OA\Put(summary: 'Mettre à jour un tweet')]
     public function update(Request $request, Tweet $tweet, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
-        if ($tweet->getAuthor() !== $this->getUser()) {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
+        if ($tweet->getAuthor() !== $currentUser) {
             return $this->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -91,8 +103,8 @@ class TweetController extends AbstractController
             return $this->json(['errors' => (string) $errors], 400);
         }
 
-        $tweet = $this->tweetService->updateFromDto($tweet, $dto);
-        return $this->json($tweet);
+        $tweetResponse = $this->tweetService->updateFromDto($tweet, $dto, $currentUser);
+        return $this->json($tweetResponse);
     }
 
     #[Route('/tweets/{id}', methods: ['DELETE'])]
@@ -100,11 +112,13 @@ class TweetController extends AbstractController
     #[OA\Delete(summary: 'Supprimer un tweet')]
     public function delete(Tweet $tweet): JsonResponse
     {
-        if ($tweet->getAuthor() !== $this->getUser()) {
-            return $this->json(['error' => 'Unauthorized'], 403);
+        $currentUser = $this->getUser();
+
+        if ($tweet->getAuthor() !== $currentUser) {
+            return $this->json(new MessageResponse('Vous n\'avez pas les droits de faire cette action'), 403);
         }
 
         $this->tweetService->deleteTweet($tweet);
-        return $this->json(['message' => 'Tweet deleted']);
+        return $this->json(new MessageResponse('Tweet supprimé avec succès !'), 200);
     }
 }
