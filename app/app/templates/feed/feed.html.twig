@@ -1,3 +1,198 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Connexion à Twitter{% endblock %}
+{% block title %}Fil d'actualités{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6ecf0;
+            color: #14171a;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            color: #1da1f2;
+        }
+
+        .tweet-feed {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tweet {
+            background-color: #fff;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: background-color 0.2s;
+        }
+
+        .tweet:hover {
+            background-color: #f5f8fa;
+        }
+
+        .tweet-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .tweet-header strong {
+            color: #14171a;
+        }
+
+        .tweet-header small {
+            color: #657786;
+        }
+
+        .tweet-content {
+            font-size: 16px;
+            color: #14171a;
+        }
+
+        .tweet-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .tweet-actions .btn {
+            font-size: 14px;
+            color: #1da1f2;
+            border-radius: 20px;
+            transition: background-color 0.2s;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .tweet-actions .btn.liked {
+            color: #e0245e;
+            font-weight: bold;
+        }
+
+        .tweet-actions .btn:hover {
+            background-color: rgba(29, 161, 242, 0.1);
+        }
+
+        .comment-section {
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f7f9fa;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .comment {
+            font-size: 14px;
+            padding: 5px 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .comment strong {
+            color: #1da1f2;
+        }
+
+        .comment-input {
+            margin-top: 10px;
+        }
+
+        .comment-input textarea {
+            width: 100%;
+            resize: vertical;
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            font-family: Arial, sans-serif;
+        }
+
+        .comment-button {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .comment-button .btn {
+            background-color: #1da1f2;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            padding: 5px 15px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .no-tweets {
+            text-align: center;
+            color: #657786;
+            font-style: italic;
+            margin-top: 20px;
+        }
+    </style>
+
+    <h1>Feed</h1>
+
+    {% if tweets is empty %}
+        <p class="no-tweets">Aucun tweet pour le moment.</p>
+    {% else %}
+        <ul class="tweet-feed">
+            {% for tweet in tweets %}
+                <li class="tweet">
+                    <div class="tweet-header">
+                        <strong>{{ tweet.author.username }}</strong>
+                        <small>{{ tweet.createdAt|date('d/m/Y H:i') }}</small>
+                    </div>
+                    <div class="tweet-content">
+                        {{ tweet.content }}
+                    </div>
+                    <div class="tweet-actions mt-2">
+                        <button class="btn btn-like {% if tweet.likedByCurrentUser %}liked{% endif %}">
+                            <i class="bi bi-heart"></i> J’aime ({{ tweet.likeCount }})
+                        </button>
+                        <button class="btn btn-retweet">
+                            <i class="bi bi-arrow-repeat"></i> Retweeter
+                        </button>
+                    </div>
+
+                    <div class="comment-section mt-2">
+                        {% if tweet.comments is empty %}
+                            <div class="comment">
+                                Aucun commentaire.
+                            </div>
+                        {% else %}
+                            {% for comment in tweet.comments %}
+                                <div class="comment">
+                                    <strong>{{ comment.author.username }}</strong> : {{ comment.content }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="comment-input">
+                        <textarea rows="3" placeholder="Écrire un commentaire..."></textarea>
+                    </div>
+
+                    <div class="comment-button">
+                        <button class="btn btn-primary btn-sm">Commenter</button>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
