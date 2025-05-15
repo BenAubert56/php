@@ -19,17 +19,17 @@ class TweetRepository extends ServiceEntityRepository
 
     public function save(Tweet $tweet, bool $flush = true): void
     {
-        $this->_em->persist($tweet);
+        $this->getEntityManager()->persist($tweet);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
     public function remove(Tweet $tweet, bool $flush = true): void
     {
-        $this->_em->remove($tweet);
+        $this->getEntityManager()->remove($tweet);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
