@@ -70,10 +70,12 @@ class TweetService
         foreach ($retweets as $retweet) {
             $combined[] = [
                 'tweet' => $retweet->getTweet(),
-                'date' => $retweet->getCreatedAt(), // 📅 très important
-                'isRetweet' => true
+                'date' => $retweet->getCreatedAt(),
+                'isRetweet' => true,
+                'retweeter' => $retweet->getUser()
             ];
         }
+
 
         // Tri par date décroissante
         usort($combined, fn($a, $b) => $b['date'] <=> $a['date']);
@@ -89,9 +91,11 @@ class TweetService
                 $tweet,
                 $likeCount,
                 $likedByCurrentUser,
-                $item['isRetweet']
+                $item['isRetweet'],
+                $item['retweeter'] ?? null
             );
         }
+
 
         return $responses;
     }

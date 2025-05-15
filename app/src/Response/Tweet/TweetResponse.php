@@ -3,6 +3,7 @@
 namespace App\Response;
 
 use App\Entity\Tweet;
+use App\Entity\User;
 use OpenApi\Attributes as OA;
 use App\Response\Comment\CommentResponse;
 use App\Response\AuthorResponse;
@@ -34,22 +35,37 @@ class TweetResponse
     #[OA\Property(type: 'boolean', example: false)]
     public bool $isRetweet = false;
 
-    public function __construct(Tweet $tweet, int $likeCount = 0, bool $likedByCurrentUser = false,
-    bool $isRetweet = false)
-    {
+    #[OA\Property(ref: '#/components/schemas/AuthorResponse', nullable: true)]
+    public ?AuthorResponse $retweeter = null;
+
+    public function __construct(
+        Tweet $tweet,
+        int $likeCount = 0,
+        bool $likedByCurrentUser = false,
+        bool $isRetweet = false,
+        ?User $retweeter = null
+    ) {
         $this->id = $tweet->getId();
         $this->content = $tweet->getContent();
         $this->createdAt = $tweet->getCreatedAt()->format(DATE_ATOM);
+
         $this->author = new AuthorResponse(
             $tweet->getAuthor()->getId(),
-            $tweet->getAuthor()->getUserIdentifier()
+            $tweet->getAuthor()->getName()
         );
+
         $this->likeCount = $likeCount;
         $this->likedByCurrentUser = $likedByCurrentUser;
-        $this->comments = [];
-        foreach ($tweet->getComments() as $comment) {
-            $this->comments[] = new CommentResponse($comment);
-        }
+        $this->comments = array_map(
+            fn($comment) => new CommentResponse($comment),
+            $tweet->getComments()->toArray()
+        );
+
         $this->isRetweet = $isRetweet;
+        $this->retweeter = $retweeter ? new AuthorResponse(
+            $retweeter->getId(),
+            $retweeter->getName()
+        ) : null;
     }
+
 }
