@@ -7,11 +7,30 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Tweet>
+ */
 class TweetRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tweet::class);
+    }
+
+    public function save(Tweet $tweet, bool $flush = true): void
+    {
+        $this->_em->persist($tweet);
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+
+    public function remove(Tweet $tweet, bool $flush = true): void
+    {
+        $this->_em->remove($tweet);
+        if ($flush) {
+            $this->_em->flush();
+        }
     }
 
     public function findByUser(User $user): array
@@ -20,15 +39,6 @@ class TweetRepository extends ServiceEntityRepository
             ->andWhere('t.author = :user')
             ->setParameter('user', $user)
             ->orderBy('t.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByIds(array $ids): array
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.id IN (:ids)')
-            ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
     }

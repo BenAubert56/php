@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Like;
+use App\Entity\User;
+use App\Entity\Tweet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,9 +20,28 @@ class LikeRepository extends ServiceEntityRepository
 
     public function findOneByUserAndTweet(User $user, Tweet $tweet): ?Like
     {
-        return $this->findOneBy([
-            'user' => $user,
-            'tweet' => $tweet,
-        ]);
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.user = :user')
+            ->andWhere('l.tweet = :tweet')
+            ->setParameter('user', $user)
+            ->setParameter('tweet', $tweet)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function save(Like $like, bool $flush = true): void
+    {
+        $this->_em->persist($like);
+        if ($flush) {
+            $this->_em->flush();
+        }
+    }
+
+    public function remove(Like $like, bool $flush = true): void
+    {
+        $this->_em->remove($like);
+        if ($flush) {
+            $this->_em->flush();
+        }
     }
 }

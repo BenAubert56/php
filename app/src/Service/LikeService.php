@@ -6,27 +6,27 @@ use App\Entity\Tweet;
 use App\Entity\User;
 use App\Entity\Like;
 use App\Repository\LikeRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class LikeService
 {
-    public function __construct(
-        private LikeRepository $likeRepository,
-        private EntityManagerInterface $em
-    ) {}
+    private LikeRepository $likeRepository;
+
+    public function __construct(LikeRepository $likeRepository) 
+    {
+        $this->likeRepository = $likeRepository;
+    }
 
     public function likeTweet(User $user, Tweet $tweet): bool
     {
         if ($this->likeRepository->findOneByUserAndTweet($user, $tweet)) {
-            return false; 
+            return false;
         }
 
         $like = new Like();
         $like->setUser($user);
         $like->setTweet($tweet);
 
-        $this->em->persist($like);
-        $this->em->flush();
+        $this->likeRepository->save($like);
 
         return true;
     }
@@ -39,8 +39,7 @@ class LikeService
             return false;
         }
 
-        $this->em->remove($like);
-        $this->em->flush();
+        $this->likeRepository->remove($like);
 
         return true;
     }

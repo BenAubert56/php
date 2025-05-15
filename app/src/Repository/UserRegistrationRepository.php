@@ -16,17 +16,19 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    public function existsByEmail(string $email): bool
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->where('u.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
+    }
+
     public function save(User $user, bool $flush = true): void
     {
         $this->_em->persist($user);
-        if ($flush) {
-            $this->_em->flush();
-        }
-    }
-
-    public function remove(User $user, bool $flush = true): void
-    {
-        $this->_em->remove($user);
         if ($flush) {
             $this->_em->flush();
         }
