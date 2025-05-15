@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Dto\Response;
+namespace App\Response\User;
 
 use App\Entity\User;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -13,12 +13,10 @@ class UserResponse
 
     public string $name;
 
-    public static function fromEntity(User $user): self
+    public function __construct(int $id, string $email, string $name)
     {
-        $dto = new self();
-        $dto->id = $user->getId();
-        $dto->email = $user->getEmail();
-        $dto->name = $user->getName();
-        return $dto;
+        $this->id = $id;
+        $this->email = $email;
+        $this->name = $name;
     }
 }
