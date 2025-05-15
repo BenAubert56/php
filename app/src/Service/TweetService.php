@@ -6,6 +6,8 @@ use App\Entity\Tweet;
 use App\Entity\User;
 use App\Repository\TweetRepository;
 use App\Repository\RetweetRepository;
+use App\Response\TweetResponse;
+use App\Response\AuthorResponse;
 
 class TweetService
 {
@@ -48,7 +50,9 @@ class TweetService
 
     public function getAllTweets(): array
     {
-        return $this->tweetRepository->findBy([], ['createdAt' => 'DESC']);
+        $tweets = $this->tweetRepository->findBy([], ['createdAt' => 'DESC']);
+
+        return array_map(fn($tweet) => new TweetResponse($tweet), $tweets);
     }
 
     public function getUserTweets(User $user): array

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\OpenApi\Response;
+namespace App\Response;
 
+use App\Entity\Tweet;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(schema: 'TweetResponse', description: 'Représentation d’un tweet')]
@@ -17,5 +18,17 @@ class TweetResponse
     public string $createdAt;
 
     #[OA\Property(type: 'object', ref: '#/components/schemas/AuthorResponse')]
-    public mixed $author;
+    public AuthorResponse $author;
+
+    public function __construct(Tweet $tweet)
+    {
+        $this->id = $tweet->getId();
+        $this->content = $tweet->getContent();
+        $this->createdAt = $tweet->getCreatedAt()->format(DATE_ATOM);
+
+        $this->author = new AuthorResponse(
+            $tweet->getAuthor()->getId(),
+            $tweet->getAuthor()->getUserIdentifier()
+        );
+    }
 }

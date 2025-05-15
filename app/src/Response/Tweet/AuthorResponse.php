@@ -1,14 +1,21 @@
 <?php
 
-#[OA\Schema(schema: 'AuthorResponse', description: 'Auteur du tweet')]
+namespace App\Response;
+
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(schema: 'AuthorResponse', description: 'Utilisateur auteur du tweet')]
 class AuthorResponse
 {
     #[OA\Property(type: 'integer', example: 1)]
     public int $id;
 
-    #[OA\Property(type: 'string', example: 'Jean Dupont')]
-    public string $name;
+    #[OA\Property(type: 'string', example: 'johndoe')]
+    public string $username;
 
-    #[OA\Property(type: 'string', nullable: true, example: 'https://cdn.app/avatar.jpg')]
-    public ?string $avatarUrl;
+    public function __construct(int $id, string $username)
+    {
+        $this->id = $id;
+        $this->username = $username;
+    }
 }

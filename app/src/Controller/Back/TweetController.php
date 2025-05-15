@@ -29,7 +29,7 @@ class TweetController extends AbstractController
     public function index(): JsonResponse
     {
         $tweets = $this->tweetService->getAllTweets();
-        return $this->json($tweets);
+        return $this->json($tweets);    
     }
 
     #[Route('/tweets/{id}', methods: ['GET'])]
