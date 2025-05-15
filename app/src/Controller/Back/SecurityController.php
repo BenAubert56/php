@@ -12,6 +12,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\UserRegistrationService;
 use OpenApi\Attributes as OA;
+use App\Exception\InvalidRegistrationDataException;
+use App\Exception\UserAlreadyExistsException;
 
 #[OA\Tag(name: 'Authentification')]
 #[Route('/api')]
