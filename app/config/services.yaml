@@ -19,6 +19,9 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\DataFixtures\:
+        resource: '../src/DataFixtures'
+        tags: ['doctrine.fixture.orm']
 
     Lexik\Bundle\JWTAuthenticationBundle\Security\Authenticator\JWTAuthenticator:
         arguments:
