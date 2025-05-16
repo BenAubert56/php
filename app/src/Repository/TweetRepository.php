@@ -19,17 +19,17 @@ class TweetRepository extends ServiceEntityRepository
 
     public function save(Tweet $tweet, bool $flush = true): void
     {
-        $this->_em->persist($tweet);
+        $this->getEntityManager()->persist($tweet);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
     public function remove(Tweet $tweet, bool $flush = true): void
     {
-        $this->_em->remove($tweet);
+        $this->getEntityManager()->remove($tweet);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
@@ -38,6 +38,29 @@ class TweetRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('t')
             ->andWhere('t.author = :user')
             ->setParameter('user', $user)
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function searchByContent(string $term): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('LOWER(t.content) LIKE :term')
+            ->setParameter('term', '%' . strtolower($term) . '%')
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function searchByContentOrAuthor(string $q): array
+    {
+        return $this->createQueryBuilder('t')
+            ->join('t.author', 'a')
+            ->where('LOWER(t.content) LIKE :term')
+            ->orWhere('LOWER(a.name) LIKE :term')
+            ->orWhere('LOWER(a.email) LIKE :term') // ou username si c'est getUserIdentifier()
+            ->setParameter('term', '%' . strtolower($q) . '%')
             ->orderBy('t.createdAt', 'DESC')
             ->getQuery()
             ->getResult();

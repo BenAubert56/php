@@ -10,6 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Attribute\Model;
+use App\Dto\Response\MessageResponse;
 
 #[OA\Tag(name: 'Likes')]
 #[Route('/api')]

@@ -31,17 +31,17 @@ class LikeRepository extends ServiceEntityRepository
 
     public function save(Like $like, bool $flush = true): void
     {
-        $this->_em->persist($like);
+        $this->getEntityManager()->persist($like);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 
     public function remove(Like $like, bool $flush = true): void
     {
-        $this->_em->remove($like);
+        $this->getEntityManager()->remove($like);
         if ($flush) {
-            $this->_em->flush();
+            $this->getEntityManager()->flush();
         }
     }
 }
