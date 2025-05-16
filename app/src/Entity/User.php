@@ -9,7 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'account', uniqueConstraints: [
@@ -20,34 +19,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['tweet:read', 'user:read'])]
+    #[Groups(['tweet:read'])]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column]
-    #[Groups(['user:write'])]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['tweet:read', 'user:read', 'user:write'])]
+    #[Groups(['tweet:read'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['tweet:read', 'user:read', 'user:write'])]
+    #[Groups(['tweet:read'])]
     private ?string $bio = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['tweet:read', 'user:read', 'user:write'])]
+    #[Groups(['tweet:read'])]
     private ?string $avatarUrl = null;
 
     #[ORM\Column]
-    #[Groups(['user:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Tweet::class, orphanRemoval: true, cascade: ['remove'])]
@@ -122,7 +119,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
-        // Implémenter si nécessaire
+        // Implémentation si tu stockes des données sensibles temporaires
     }
 
     public function getName(): ?string
