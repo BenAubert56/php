@@ -99,4 +99,35 @@ class FollowController extends AbstractController
 
         return $this->json($responses, 200);
     }
+
+    #[Route('/me/followers', name: 'me_followers', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    #[OA\Get(summary: 'Lister mes abonnés (followers)')]
+    public function myFollowers(): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $followers = $this->followService->getFollowers($user);
+
+        $data = array_map(fn(User $follower) => $this->userService->getResponseByUser($follower), $followers);
+
+        return $this->json($data);
+    }
+
+    #[Route('/me/followings', name: 'me_followings', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    #[OA\Get(summary: 'Lister les utilisateurs que je suis (followings)')]
+    public function myFollowings(): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $followings = $this->followService->getFollowings($user);
+
+        $data = array_map(fn(User $following) => $this->userService->getResponseByUser($following), $followings);
+
+        return $this->json($data);
+    }
+
 }
