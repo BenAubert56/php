@@ -3,7 +3,8 @@
 namespace App\Controller\Back;
 
 use App\Entity\Comment;
-use App\Entity\Tweet;
+use App\Repository\CommentRepository;
+use App\Repository\TweetRepository;
 use App\Response\Comment\CommentResponse;
 use App\Dto\Response\MessageResponse;
 use App\Service\CommentService;
@@ -27,11 +28,17 @@ class CommentController extends AbstractController
     #[IsGranted('ROLE_USER')]
     #[OA\Post(summary: 'Ajouter un commentaire à un tweet')]
     public function create(
+        int $id,
         Request $request,
-        Tweet $tweet,
+        TweetRepository $tweetRepo,
         SerializerInterface $serializer,
         ValidatorInterface $validator
     ): JsonResponse {
+        $tweet = $tweetRepo->find($id);
+        if (!$tweet) {
+            return $this->json(new MessageResponse('Tweet introuvable'), 404);
+        }
+
         $dto = $serializer->deserialize($request->getContent(), CreateCommentRequest::class, 'json');
         $errors = $validator->validate($dto);
 
@@ -48,8 +55,13 @@ class CommentController extends AbstractController
     #[Route('/tweets/{id}/comments', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     #[OA\Get(summary: 'Lister les commentaires d’un tweet')]
-    public function list(Tweet $tweet): JsonResponse
+    public function list(int $id, TweetRepository $tweetRepo): JsonResponse
     {
+        $tweet = $tweetRepo->find($id);
+        if (!$tweet) {
+            return $this->json(new MessageResponse('Tweet introuvable'), 404);
+        }
+
         $comments = $this->commentService->getByTweet($tweet);
         return $this->json($comments);
     }
@@ -57,15 +69,19 @@ class CommentController extends AbstractController
     #[Route('/comments/{id}', methods: ['DELETE'])]
     #[IsGranted('ROLE_USER')]
     #[OA\Delete(summary: 'Supprimer un commentaire')]
-    public function delete(Comment $comment): JsonResponse
+    public function delete(int $id, CommentRepository $commentRepo): JsonResponse
     {
-        $user = $this->getUser();
+        $comment = $commentRepo->find($id);
+        if (!$comment) {
+            return $this->json(new MessageResponse('Commentaire introuvable'), 404);
+        }
 
+        $user = $this->getUser();
         if ($comment->getAuthor() !== $user) {
-            return $this->json(new MessageResponse('Unauthorized'), 403);
+            return $this->json(new MessageResponse('Non autorisé à supprimer ce commentaire'), 403);
         }
 
         $this->commentService->delete($comment);
-        return $this->json(new MessageResponse('Comment deleted'));
+        return $this->json(new MessageResponse('Commentaire supprimé avec succès !'));
     }
 }

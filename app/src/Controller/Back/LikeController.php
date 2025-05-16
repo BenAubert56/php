@@ -3,13 +3,13 @@
 namespace App\Controller\Back;
 
 use App\Entity\Tweet;
+use App\Repository\TweetRepository;
 use App\Service\LikeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use OpenApi\Attributes as OA;
-use Nelmio\ApiDocBundle\Attribute\Model;
 use App\Dto\Response\MessageResponse;
 
 #[OA\Tag(name: 'Likes')]
@@ -21,8 +21,13 @@ class LikeController extends AbstractController
     #[Route('/tweets/{id}/like', name: 'tweet_like', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
     #[OA\Post(summary: 'Liker un tweet')]
-    public function like(Tweet $tweet): JsonResponse
+    public function like(int $id, TweetRepository $tweetRepo): JsonResponse
     {
+        $tweet = $tweetRepo->find($id);
+        if (!$tweet) {
+            return $this->json(new MessageResponse('Tweet introuvable'), 404);
+        }
+
         $user = $this->getUser();
 
         if ($this->likeService->likeTweet($user, $tweet)) {
@@ -35,8 +40,13 @@ class LikeController extends AbstractController
     #[Route('/tweets/{id}/unlike', name: 'tweet_unlike', methods: ['DELETE'])]
     #[IsGranted('ROLE_USER')]
     #[OA\Delete(summary: 'Unliker un tweet')]
-    public function unlike(Tweet $tweet): JsonResponse
+    public function unlike(int $id, TweetRepository $tweetRepo): JsonResponse
     {
+        $tweet = $tweetRepo->find($id);
+        if (!$tweet) {
+            return $this->json(new MessageResponse('Tweet introuvable'), 404);
+        }
+
         $user = $this->getUser();
 
         if ($this->likeService->unlikeTweet($user, $tweet)) {

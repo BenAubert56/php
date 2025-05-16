@@ -5,7 +5,7 @@ namespace App\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'CreateCommentRequest', description: 'Payload de création de commentaire')]
+#[OA\Schema(schema: 'CreateCommentRequest', title: 'Payload de création de commentaire')]
 class CreateCommentRequest
 {
     #[Assert\NotBlank(message: 'Le contenu ne peut pas être vide.')]
