@@ -270,17 +270,22 @@
             {% endif %}
         </div>
 
-        <div class="user-list">
-            <h2>Utilisateurs</h2>
-            {% if users is not empty %}
-                <ul>
-                    {% for user in users %}
-                        <li>@{{ user.name }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>Aucun utilisateur.</p>
-            {% endif %}
-        </div>
+    <div class="user-list">
+        <h2>Utilisateurs</h2>
+        {% if users is not empty %}
+            <ul>
+                {% for user in users %}
+                    <li>
+                        <a href="{{ path('app_profile', { id: user.id }) }}">
+                            @{{ user.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Aucun utilisateur.</p>
+        {% endif %}
+    </div>
+
     </div>
 {% endblock %}
