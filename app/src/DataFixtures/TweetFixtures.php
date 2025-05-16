@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
+use DateTimeImmutable;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class TweetFixtures extends Fixture implements DependentFixtureInterface
@@ -15,18 +16,21 @@ class TweetFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = Factory::create('fr_FR');
 
-        $users = $manager->getRepository(User::class)->findAll();
+        // Récupérer les utilisateurs créés dans UserFixtures
+        for ($i = 1; $i <= 5; $i++) {
+            /** @var User $user */
+            $user = $manager->getRepository(User::class)->findOneBy(['email' => "user{$i}@example.com"]);
 
-        if (empty($users)) {
-            throw new \RuntimeException('Aucun utilisateur trouvé pour associer les tweets. Assurez-vous que UserFixtures est exécuté avant.');
-        }
+            if (!$user) {
+                continue;
+            }
 
-        foreach ($users as $user) {
-            $tweetCount = rand(3, 10);
-            for ($i = 0; $i < $tweetCount; $i++) {
+            // Créer entre 2 et 5 tweets par utilisateur
+            $tweetCount = rand(2, 5);
+            for ($j = 0; $j < $tweetCount; $j++) {
                 $tweet = new Tweet();
-                $tweet->setContent($faker->realText(140));
-                $tweet->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween('-30 days')->format('Y-m-d H:i:s')));
+                $tweet->setContent($faker->sentence(12));
+                $tweet->setCreatedAt(new DateTimeImmutable());
                 $tweet->setAuthor($user);
 
                 $manager->persist($tweet);

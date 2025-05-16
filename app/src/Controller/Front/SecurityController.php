@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SecurityController extends AbstractController
@@ -18,46 +19,47 @@ class SecurityController extends AbstractController
     }
 
     #[Route(path: '/login', name: 'app_login')]
-    public function login(Request $request): Response
-    {
-        $lastUsername = '';
-        $error = null;
+public function login(Request $request, SessionInterface $session): Response
+{
+    $lastUsername = '';
+    $error = null;
 
-        if ($request->isMethod('POST')) {
-            $email = $request->request->get('_username');
-            $password = $request->request->get('_password');
-            $lastUsername = $email;
+    if ($request->isMethod('POST')) {
+        $email = $request->request->get('_username');
+        $password = $request->request->get('_password');
+        $lastUsername = $email;
 
-            try {
-                    $response = $this->httpClient->request('POST', 'http://php/api/login', [
-                        'json' => [
-                            'email' => $email,
-                            'password' => $password,
-                        ],
-                    ]);
+        try {
+            $response = $this->httpClient->request('POST', 'http://php/api/login', [
+                'json' => [
+                    'email' => $email,
+                    'password' => $password,
+                ],
+            ]);
 
-                if ($response->getStatusCode() === 200) {
-                    $data = $response->toArray();
-                    // Tu peux stocker le token en session si tu utilises JWT
-                    $this->addFlash('success', 'Connexion réussie');
-                    // Rediriger vers une page protégée ou d'accueil
-                    return $this->redirectToRoute('app_feed');
-                }
+            if ($response->getStatusCode() === 200) {
+                $data = $response->toArray();
 
-                $data = $response->toArray(false);
-                $error = $data['error'] ?? 'Erreur inconnue lors de la connexion.';
+                $session->set('auth_token', $data['token']);
 
-            } catch (\Exception $e) {
-                $error = 'Erreur de connexion avec l\'API : ' . $e->getMessage();
+                $this->addFlash('success', 'Connexion réussie');
+                return $this->redirectToRoute('app_feed');
             }
-        }
 
-        return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error,
-            'current_page' => 'login',
-        ]);
+            $data = $response->toArray(false);
+            $error = $data['error'] ?? 'Erreur inconnue lors de la connexion.';
+
+        } catch (\Exception $e) {
+            $error = 'Erreur de connexion avec l\'API : ' . $e->getMessage();
+        }
     }
+
+    return $this->render('security/login.html.twig', [
+        'last_username' => $lastUsername,
+        'error' => $error,
+        'current_page' => 'login',
+    ]);
+}
 
     #[Route(path: '/register', name: 'app_register')]
     public function register(Request $request): Response
