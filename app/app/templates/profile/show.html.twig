@@ -71,7 +71,7 @@
                     <h5 class="card-title"><i class="bi bi-person-check-fill me-2"></i>Abonnements ({{ user.followingCount }})</h5>
                     <ul class="list-unstyled mb-0">
                         {% for following in followings %}
-                            <li><i class="bi bi-person-circle"></i> {{ following.name }} <small class="text-muted">({{ following.email }})</small></li>
+                            <li><i class="bi bi-person-circle"></i> {{ following.name }} <small class="text-muted"></small></li>
                         {% else %}
                             <li class="text-muted">Ne suit personne</li>
                         {% endfor %}
