@@ -14,6 +14,9 @@ use App\Service\UserRegistrationService;
 use OpenApi\Attributes as OA;
 use App\Exception\InvalidRegistrationDataException;
 use App\Exception\UserAlreadyExistsException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Dto\Request\CreateUserRequest;
 
 #[OA\Tag(name: 'Authentification')]
 #[Route('/api')]
@@ -28,21 +31,27 @@ class SecurityController extends AbstractController
 
     #[Route('/register', name: 'api_register', methods: ['POST'])]
     #[OA\Post(summary: 'Inscription utilisateur')]
-    public function register(Request $request): JsonResponse
-    {
+    public function register(
+        Request $request,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator
+    ): JsonResponse {
         try {
-            $data = json_decode($request->getContent(), true);
+            /** @var CreateUserRequest $dto */
+            $dto = $serializer->deserialize($request->getContent(), CreateUserRequest::class, 'json');
 
-            if (!is_array($data)) {
-                throw new InvalidRegistrationDataException('Invalid JSON body');
+            $errors = $validator->validate($dto);
+            if (count($errors) > 0) {
+                $errorsArray = [];
+                foreach ($errors as $error) {
+                    $errorsArray[$error->getPropertyPath()][] = $error->getMessage();
+                }
+                return $this->json(['errors' => $errorsArray], 400);
             }
 
-            $this->registrationService->register($data);
+            $this->registrationService->registerFromDto($dto);
+
             return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
-        } catch (InvalidRegistrationDataException | \TypeError $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
-        } catch (UserAlreadyExistsException $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
         } catch (\Throwable $e) {
             return $this->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
