@@ -4,7 +4,7 @@ namespace App\Response;
 
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(schema: 'AuthorResponse', description: 'Utilisateur auteur du tweet')]
+#[OA\Schema(schema: 'AuthorResponse', description: 'Informations sur l’auteur du tweet')]
 class AuthorResponse
 {
     #[OA\Property(type: 'integer', example: 1)]

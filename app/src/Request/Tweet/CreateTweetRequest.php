@@ -2,12 +2,15 @@
 
 namespace App\Dto\Request;
 
+use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[OA\Schema(description: 'Requête pour créer un tweet')]
 class CreateTweetRequest
 {
-    #[Assert\NotBlank(message: 'Le contenu est requis.')]
-    #[Assert\Type(type: 'string', message: 'Le contenu doit être une chaîne de caractères.')]
-    #[Assert\Length(max: 280, maxMessage: 'Le contenu ne peut pas dépasser {{ limit }} caractères.')]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 280)]
+    #[OA\Property(type: 'string', example: 'Mon premier tweet !')]
     public string $content;
 }
+

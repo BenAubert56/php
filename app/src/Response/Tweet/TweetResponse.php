@@ -5,8 +5,8 @@ namespace App\Response;
 use App\Entity\Tweet;
 use App\Entity\User;
 use OpenApi\Attributes as OA;
-use App\Response\Comment\CommentResponse;
 use App\Response\AuthorResponse;
+use App\Response\Comment\CommentResponse;
 
 #[OA\Schema(schema: 'TweetResponse', description: 'Représentation d’un tweet')]
 class TweetResponse
@@ -54,18 +54,17 @@ class TweetResponse
             $tweet->getAuthor()->getName()
         );
 
-        $this->likeCount = $likeCount;
-        $this->likedByCurrentUser = $likedByCurrentUser;
         $this->comments = array_map(
             fn($comment) => new CommentResponse($comment),
             $tweet->getComments()->toArray()
         );
 
-        $this->isRetweet = $isRetweet;
-        $this->retweeter = $retweeter ? new AuthorResponse(
-            $retweeter->getId(),
-            $retweeter->getName()
-        ) : null;
-    }
+        $this->likeCount = $likeCount;
+        $this->likedByCurrentUser = $likedByCurrentUser;
 
+        if ($isRetweet && $retweeter) {
+            $this->isRetweet = true;
+            $this->retweeter = new AuthorResponse($retweeter->getId(), $retweeter->getName());
+        }
+    }
 }

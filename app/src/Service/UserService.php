@@ -28,7 +28,7 @@ class UserService
         $users = $this->userRepository->findAll();
 
         return array_map(
-            fn(User $user) => new UserResponse($user->getId(), $user->getEmail(), $user->getName()),
+            fn(User $user) => new UserResponse($user),
             $users
         );
     }
@@ -69,10 +69,6 @@ class UserService
 
     public function getResponseByUser(User $user): UserResponse
     {
-        return new UserResponse(
-            $user->getId(),
-            $user->getEmail(),
-            $user->getName()
-        );
+        return new UserResponse($user);
     }
 }

@@ -19,6 +19,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
+
 
 #[OA\Tag(name: 'Tweets')]
 #[Route('/api')]
@@ -85,9 +87,24 @@ class TweetController extends AbstractController
 
     #[Route('/tweets', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Post(summary: 'Créer un tweet')]
-    public function create(Request $request, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
-    {
+    #[OA\Post(
+        summary: 'Créer un tweet',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                ref: new Model(type: CreateTweetRequest::class)
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Tweet créé'),
+            new OA\Response(response: 400, description: 'Validation échouée')
+        ]
+    )]
+    public function create(
+        Request $request,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator
+    ): JsonResponse {
         $dto = $serializer->deserialize($request->getContent(), CreateTweetRequest::class, 'json');
         $errors = $validator->validate($dto);
 
