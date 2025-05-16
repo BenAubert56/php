@@ -41,4 +41,69 @@ class TweetController extends AbstractController
 
         return $this->redirectToRoute('app_feed');
     }
+
+    #[Route('/tweet/{id}/retweet', name: 'tweet_retweet_front', methods: ['POST'])]
+    public function retweet(int $id, HttpClientInterface $httpClient, RequestStack $requestStack): Response
+    {
+        $session = $requestStack->getSession();
+        $token = $session->get('auth_token');
+
+        if (!$token) {
+            $this->addFlash('error', 'Vous devez être connecté pour retweeter.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $response = $httpClient->request('POST', "http://php/api/tweets/{$id}/retweet", [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+            ]);
+
+            if ($response->getStatusCode() === 201) {
+                $this->addFlash('success', 'Retweet effectué avec succès !');
+            } else {
+                $data = $response->toArray(false);
+                $this->addFlash('warning', $data['message'] ?? 'Impossible de retweeter ce tweet.');
+            }
+
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'appel à l\'API : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_feed');
+    }
+
+    #[Route('/tweet/{id}/unlike', name: 'tweet_unlike_front', methods: ['POST'])]
+    public function unlike(int $id, HttpClientInterface $httpClient, RequestStack $requestStack): Response
+    {
+        $session = $requestStack->getSession();
+        $token = $session->get('auth_token');
+
+        if (!$token) {
+            $this->addFlash('error', 'Vous devez être connecté pour annuler un like.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $response = $httpClient->request('DELETE', "http://php/api/tweets/{$id}/unlike", [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                $this->addFlash('success', 'Like supprimé avec succès !');
+            } else {
+                $data = $response->toArray(false);
+                $this->addFlash('warning', $data['message'] ?? 'Impossible de supprimer le like.');
+            }
+
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'appel à l\'API : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_feed');
+    }
+
 }

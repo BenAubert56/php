@@ -163,5 +163,4 @@ class TweetController extends AbstractController
 
         return $this->json(new MessageResponse('Retweet effectué avec succès'), 201);
     }
-
 }
