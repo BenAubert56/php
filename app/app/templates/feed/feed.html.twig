@@ -162,9 +162,10 @@
                         {{ tweet.content }}
                     </div>
                     <div class="tweet-actions mt-2">
-                        <button class="btn btn-like {% if tweet.likedByCurrentUser %}liked{% endif %}">
-                            <i class="bi bi-heart"></i> J’aime ({{ tweet.likeCount }})
-                        </button>
+                <a href="{{ path('tweet_like', { id: tweet.id }) }}" class="btn btn-like {% if tweet.likedByCurrentUser %}liked{% endif %}">
+                    <i class="bi bi-heart"></i> J’aime ({{ tweet.likeCount }})
+                </a>
+
                         <button class="btn btn-retweet">
                             <i class="bi bi-arrow-repeat"></i> Retweeter
                         </button>
