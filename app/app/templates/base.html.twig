@@ -11,9 +11,16 @@
 
     <style>
         .sidebar {
-            position: sticky
-            top: 0;
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .main-with-sidebar {
+            margin-left: 250px;
         }
 
         .mouse-logo {
@@ -62,52 +69,48 @@
     {% block stylesheets %}{% endblock %}
 </head>
 <body class="bg-light">
-    <div class="container-fluid">
-        <div class="row">
+    {% if current_page not in ['login', 'register'] %}
+        <nav class="sidebar bg-white border-end p-3 d-flex flex-column justify-content-between">
+            <div>
+                <img class="mouse-logo d-block mx-auto mb-4" src="{{ asset('images/mouseIcon.png') }}" alt="Mouse Icon">
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if current_page == 'home' %}active{% endif %}" href="#">
+                            <i class="bi bi-house"></i> Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if current_page == 'explore' %}active{% endif %}" href="#">
+                            <i class="bi bi-search"></i> Explorer
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if current_page == 'notifications' %}active{% endif %}" href="#">
+                            <i class="bi bi-bell"></i> Notifications
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if current_page == 'messages' %}active{% endif %}" href="#">
+                            <i class="bi bi-envelope"></i> Messages
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link {% if current_page == 'profile' %}active{% endif %}" href="#">
+                            <i class="bi bi-person"></i> Profil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-twitter w-100" href="#">Tweeter</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    {% endif %}
 
-            {% if current_page not in ['login', 'register'] %}
-                <!-- Sidebar gauche -->
-                <nav class="sidebar col-md-3 col-lg-2 d-md-block bg-white border-end vh-100 p-3 d-flex flex-column justify-content-between">
-                    <div>
-                        <img class="mouse-logo d-block mx-auto mb-4" src="{{ asset('images/mouseIcon.png') }}" alt="Mouse Icon">
-                        <ul class="nav flex-column">
-                            <li class="nav-item mb-2">
-                                <a class="nav-link {% if current_page == 'home' %}active{% endif %}" href="#">
-                                    <i class="bi bi-house"></i> Accueil
-                                </a>
-                            </li>
-                            <li class="nav-item mb-2">
-                                <a class="nav-link {% if current_page == 'explore' %}active{% endif %}" href="#">
-                                    <i class="bi bi-search"></i> Explorer
-                                </a>
-                            </li>
-                            <li class="nav-item mb-2">
-                                <a class="nav-link {% if current_page == 'notifications' %}active{% endif %}" href="#">
-                                    <i class="bi bi-bell"></i> Notifications
-                                </a>
-                            </li>
-                            <li class="nav-item mb-2">
-                                <a class="nav-link {% if current_page == 'messages' %}active{% endif %}" href="#">
-                                    <i class="bi bi-envelope"></i> Messages
-                                </a>
-                            </li>
-                            <li class="nav-item mb-2">
-                                <a class="nav-link {% if current_page == 'profile' %}active{% endif %}" href="#">
-                                    <i class="bi bi-person"></i> Profil
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-twitter w-100" href="#">Tweeter</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-            {% endif %}
-
-            <main class="{% if current_page in ['login', 'register'] %}container py-5{% else %}col-md-9 col-lg-6 p-4 mx-auto{% endif %}">
-                {% block body %}{% endblock %}
-            </main>
-        </div>
+    <div class="{% if current_page in ['login', 'register'] %}container py-5{% else %}main-with-sidebar{% endif %}">
+        <main class="p-4">
+            {% block body %}{% endblock %}
+        </main>
     </div>
 </body>
 </html>

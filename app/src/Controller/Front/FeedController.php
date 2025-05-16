@@ -24,23 +24,30 @@ class FeedController extends AbstractController
         $request = $requestStack->getCurrentRequest();
         $query = $request->query->get('q');
     
-        $url = 'http://php/api/tweets/';
+        $tweetUrl = 'http://php/api/tweets/';
         if ($query) {
-            $url .= '?q=' . urlencode($query);
+            $tweetUrl .= '?q=' . urlencode($query);
         }
     
-        $response = $client->request('GET', $url, [
+        $tweetsResponse = $client->request('GET', $tweetUrl, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
             ],
         ]);
     
-        $tweets = $response->toArray();
+        $usersResponse = $client->request('GET', 'http://php/api/users', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+            ],
+        ]);
+    
+        $tweets = $tweetsResponse->toArray();
+        $users = $usersResponse->toArray();
     
         return $this->render('feed/feed.html.twig', [
             'current_page' => 'feed',
             'tweets' => $tweets,
+            'users' => $users,
         ]);
     }
-    
 }

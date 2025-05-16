@@ -18,11 +18,18 @@
             color: #1da1f2;
         }
 
+        .feed-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 0 20px;
+        }
+
         .tweet-feed {
             list-style: none;
             padding: 0;
             max-width: 600px;
-            margin: 0 auto;
+            flex: 1;
         }
 
         .tweet {
@@ -144,11 +151,50 @@
             font-style: italic;
             margin-top: 20px;
         }
+
+        .retweet-info {
+            color: #1da1f2;
+            margin-bottom: 10px;
+        }
+
+        .user-list {
+            width: 250px;
+            background-color: #fff;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px;
+            height: 500px;
+            overflow-y: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .user-list h2 {
+            margin-top: 0;
+            color: #1da1f2;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .user-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .user-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e1e8ed;
+            font-size: 15px;
+        }
+
+        .user-list li:last-child {
+            border-bottom: none;
+        }
     </style>
 
-    <h1>Feed</h1>
-
-    <form method="get" action="{{ path('app_feed') }}" style="max-width:600px;margin:0 auto 20px;display:flex;gap:10px;">
+    <div class="feed-container">
+        <div>
+            <form method="get" action="{{ path('app_feed') }}" style="max-width:600px;margin:0 auto 20px;display:flex;gap:10px;">
         <input
             type="text"
             name="q"
@@ -158,56 +204,83 @@
         >
         <button type="submit" class="btn" style="background:#1da1f2;color:white;border-radius:20px;padding:8px 18px;">🔍</button>
     </form>
-
-    {% if tweets is empty %}
-        <p class="no-tweets">Aucun tweet pour le moment.</p>
-    {% else %}
-        <ul class="tweet-feed">
-            {% for tweet in tweets %}
-                <li class="tweet">
-                    <div class="tweet-header">
-                        <strong>{{ tweet.author.username }}</strong>
-                        <small>{{ tweet.createdAt|date('d/m/Y H:i') }}</small>
-                    </div>
-                    <div class="tweet-content">
-                        {{ tweet.content }}
-                    </div>
-                    <div class="tweet-actions mt-2">
-                        <form action="{{ path('tweet_like_front', { id: tweet.id }) }}" method="post" style="display: inline;">
-                            <button type="submit" class="btn btn-like {% if tweet.likedByCurrentUser %}liked{% endif %}">
-                                <i class="bi bi-heart"></i> J’aime ({{ tweet.likeCount }})
-                            </button>
-                        </form>
-                        <button class="btn btn-retweet">
-                            <i class="bi bi-arrow-repeat"></i> Retweeter
-                        </button>
-                    </div>
-
-                    <div class="comment-section mt-2">
-                        {% if tweet.comments is empty %}
-                            <div class="comment">
-                                Aucun commentaire.
-                            </div>
-                        {% else %}
-                            {% for comment in tweet.comments %}
-                                <div class="comment">
-                                    <strong>{{ comment.author.username }}</strong> : {{ comment.content }}
+            {% if tweets is empty %}
+                <p class="no-tweets">Aucun tweet pour le moment.</p>
+            {% else %}
+                <ul class="tweet-feed">
+                    {% for tweet in tweets %}
+                        <li class="tweet">
+                            {% if tweet.isRetweet and tweet.retweeter %}
+                                <div class="retweet-info">
+                                    <i class="bi bi-arrow-repeat"></i> <em>{{ tweet.retweeter.username }} a retweeté</em>
                                 </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
+                            {% endif %}
 
-                    <div class="comment-input">
-                        <form method="post" action="{{ path('tweet_comment_front', { id: tweet.id }) }}">
-                            <textarea name="content" rows="3" placeholder="Écrire un commentaire..." required></textarea>
-                            <div class="comment-button">
-                                <button type="submit" class="btn btn-primary btn-sm">Commenter</button>
+                            <div class="tweet-header">
+                                <strong>@{{ tweet.author.username }}</strong>
+                                <small>{{ tweet.createdAt | date('d/m/Y H:i') }}</small>
                             </div>
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('create_comment') }}">
-                        </form>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+                            
+                            <div class="tweet-content">
+                                {{ tweet.content }}
+                            </div>
+
+                            <div class="tweet-actions mt-2">
+                                <form action="{{ path(tweet.likedByCurrentUser ? 'tweet_unlike_front' : 'tweet_like_front', { id: tweet.id }) }}"
+                                    method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-like {% if tweet.likedByCurrentUser %}liked{% endif %}">
+                                        <i class="bi bi-heart"></i>
+                                        {% if tweet.likedByCurrentUser %}Je n’aime plus{% else %}J’aime{% endif %} ({{ tweet.likeCount }})
+                                    </button>
+                                </form>
+
+                                <form action="{{ path('tweet_retweet_front', { id: tweet.id }) }}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-retweet">
+                                        <i class="bi bi-arrow-repeat"></i> Retweeter
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="comment-section mt-2">
+                                {% if tweet.comments is empty %}
+                                    <div class="comment">
+                                        Aucun commentaire.
+                                    </div>
+                                {% else %}
+                                    {% for comment in tweet.comments %}
+                                        <div class="comment">
+                                            <strong>{{ comment.author.username }}</strong> : {{ comment.content }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+
+                            <div class="comment-input">
+                                <form method="post" action="{{ path('tweet_comment_front', { id: tweet.id }) }}">
+                                    <textarea name="content" rows="3" placeholder="Écrire un commentaire..." required></textarea>
+                                    <div class="comment-button">
+                                        <button type="submit" class="btn btn-primary btn-sm">Commenter</button>
+                                    </div>
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('create_comment') }}">
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="user-list">
+            <h2>Utilisateurs</h2>
+            {% if users is not empty %}
+                <ul>
+                    {% for user in users %}
+                        <li>@{{ user.name }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Aucun utilisateur.</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
