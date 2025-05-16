@@ -14,24 +14,17 @@ class Tweet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['tweet:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['tweet:read'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Groups(['tweet:read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tweets')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    #[Groups(['tweet:read'])]
     private ?User $author = null;
-
-    #[ORM\OneToMany(mappedBy: 'tweet', targetEntity: Retweet::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $retweets;
 
     #[ORM\OneToMany(mappedBy: 'tweet', targetEntity: Comment::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $comments;
@@ -39,9 +32,23 @@ class Tweet
     #[ORM\OneToMany(mappedBy: 'tweet', targetEntity: Like::class, orphanRemoval: true, cascade: ['remove'])]    
     private Collection $likes;
 
+    #[ORM\ManyToOne(targetEntity: Tweet::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Tweet $originalTweet = null;
+
+    public function getOriginalTweet(): ?Tweet
+    {
+        return $this->originalTweet;
+    }
+
+    public function setOriginalTweet(?Tweet $tweet): self
+    {
+        $this->originalTweet = $tweet;
+        return $this;
+    }
+
     public function __construct()
     {
-        $this->retweets = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->likes = new ArrayCollection();
     }

@@ -148,4 +148,20 @@ class TweetController extends AbstractController
         $this->tweetService->deleteTweet($tweet);
         return $this->json(new MessageResponse('Tweet supprimé avec succès !'), 200);
     }
+
+    #[Route('/tweets/{id}/retweet', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    #[OA\Post(summary: 'Retweeter un tweet')]
+    public function retweet(int $id, TweetRepository $tweetRepo): JsonResponse
+    {
+        $tweet = $tweetRepo->find($id);
+        if (!$tweet) {
+            return $this->json(new MessageResponse('Tweet introuvable'), 404);
+        }
+
+        $retweet = $this->tweetService->retweet($tweet, $this->getUser());
+
+        return $this->json(new MessageResponse('Retweet effectué avec succès'), 201);
+    }
+
 }
