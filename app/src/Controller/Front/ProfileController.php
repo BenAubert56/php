@@ -24,7 +24,6 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // Requête vers l’API pour obtenir les infos utilisateur par email
         $response = $client->request('GET', "http://php/api/users/email/{$email}", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,

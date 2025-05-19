@@ -11,6 +11,6 @@ class HomeController extends AbstractController
     #[Route('/', name: 'home_redirect')]
     public function index(): RedirectResponse
     {
-        return $this->redirectToRoute('app_login'); // ou 'login' selon ton nom de route
+        return $this->redirectToRoute('app_login');
     }
 }
