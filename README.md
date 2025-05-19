@@ -11,7 +11,9 @@ docker exec -it symfony-php bash
 ```bash
 composer install
 ```
-
+```bash
+php bin/console make:migration
+```
 Le serveur Symfony sera accessible sur :
 ```bash
 http://localhost:8000

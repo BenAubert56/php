@@ -22,18 +22,22 @@ class FollowController extends AbstractController
         private UserService $userService
     ) {}
 
-    #[Route('/users/{id}/follow', name: 'user_follow', methods: ['POST'])]
+    #[Route('/me/follow/{id}', name: 'me_follow', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Post(summary: 'S’abonner à un utilisateur')]
-    public function follow(int $id, UserRepository $userRepo): JsonResponse
+    #[OA\Post(summary: 'S’abonner à un utilisateur en tant qu’utilisateur connecté')]
+    public function meFollow(int $id, UserRepository $userRepo): JsonResponse
     {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
         $targetUser = $userRepo->find($id);
         if (!$targetUser) {
             return $this->json(new MessageResponse("Utilisateur introuvable"), 404);
         }
 
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
+        if ($currentUser === $targetUser) {
+            return $this->json(new MessageResponse("Vous ne pouvez pas vous suivre vous-même"), 400);
+        }
 
         if (!$this->followService->follow($currentUser, $targetUser)) {
             return $this->json(new MessageResponse("Abonnement invalide ou déjà existant"), 400);
@@ -42,18 +46,18 @@ class FollowController extends AbstractController
         return $this->json(new MessageResponse("Utilisateur suivi avec succès !"), 201);
     }
 
-    #[Route('/users/{id}/unfollow', name: 'user_unfollow', methods: ['DELETE'])]
+    #[Route('/me/unfollow/{id}', name: 'me_unfollow', methods: ['DELETE'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Delete(summary: 'Se désabonner d’un utilisateur')]
-    public function unfollow(int $id, UserRepository $userRepo): JsonResponse
+    #[OA\Delete(summary: 'Se désabonner d’un utilisateur en tant qu’utilisateur connecté')]
+    public function meUnfollow(int $id, UserRepository $userRepo): JsonResponse
     {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+
         $targetUser = $userRepo->find($id);
         if (!$targetUser) {
             return $this->json(new MessageResponse("Utilisateur introuvable"), 404);
         }
-
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
 
         if (!$this->followService->unfollow($currentUser, $targetUser)) {
             return $this->json(new MessageResponse("Vous ne suivez pas cet utilisateur"), 400);
