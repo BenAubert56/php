@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Security\Core\Security;
 use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 
@@ -21,7 +22,9 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 #[Route('/api')]
 class UserController extends AbstractController
 {
-    public function __construct(private UserService $userService) {}
+    public function __construct(
+        private UserService $userService,
+    ) {}
 
     #[Route('/users', methods: ['GET'])]
     #[OA\Get(
@@ -65,8 +68,9 @@ class UserController extends AbstractController
         if (!$user) {
             return $this->json(new MessageResponse('Utilisateur introuvable'), 404);
         }
-    
-        $response = $this->userService->getResponseByUser($user);
+
+        $currentUser = $this->getUser();
+        $response = $this->userService->getResponseByUser($user, $currentUser); // Passage de l'utilisateur connecté
         return $this->json($response);
     }
 
@@ -114,7 +118,7 @@ class UserController extends AbstractController
         }
 
         $user = $this->userService->updateFromDto($user, $dto);
-        $response = $this->userService->getResponseByUser($user);
+        $response = $this->userService->getResponseByUser($user, $this->getUser());
         return $this->json($response);
     }
 

@@ -67,8 +67,16 @@ class UserService
         $this->userRepository->remove($user);
     }
 
-    public function getResponseByUser(User $user): UserResponse
+    public function getResponseByUser(User $user, ?User $currentUser = null): UserResponse
     {
-        return new UserResponse($user);
+        $isFollowedByMe = false;
+        $isFollowingMe = false;
+
+        if ($currentUser && $currentUser !== $user) {
+            $isFollowedByMe = $currentUser->getFollowing()->contains($user);
+            $isFollowingMe = $user->getFollowing()->contains($currentUser);
+        }
+
+        return new UserResponse($user, $isFollowedByMe, $isFollowingMe);
     }
 }

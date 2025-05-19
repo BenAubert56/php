@@ -62,8 +62,14 @@ class UserResponse
     )]
     public array $followings;
 
+    #[OA\Property(type: 'integer')]
+    public int $isFollowedByMe;
 
-    public function __construct(User $user)
+    #[OA\Property(type: 'integer')]
+    public int $isFollowingMe;
+
+
+    public function __construct(User $user, bool $isFollowedByMe = false, bool $isFollowingMe = false)
     {
         $this->id = $user->getId();
         $this->name = $user->getName();
@@ -100,5 +106,8 @@ class UserResponse
                 'email' => $follow->getFollowing()->getEmail()
             ]
         )->toArray();
+
+        $this->isFollowedByMe = $isFollowedByMe;
+        $this->isFollowingMe = $isFollowingMe;
     }
 } 
