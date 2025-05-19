@@ -105,5 +105,4 @@ class TweetController extends AbstractController
 
         return $this->redirectToRoute('app_feed');
     }
-
 }

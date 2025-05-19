@@ -43,11 +43,14 @@ class FeedController extends AbstractController
     
         $tweets = $tweetsResponse->toArray();
         $users = $usersResponse->toArray();
+        $connectedUserEmail = $session->get('user_email');
+
     
         return $this->render('feed/feed.html.twig', [
             'current_page' => 'feed',
             'tweets' => $tweets,
             'users' => $users,
+            'connectedUserEmail' => $connectedUserEmail
         ]);
     }
 }

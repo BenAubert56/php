@@ -10,9 +10,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ProfileController extends AbstractController
 {
-    #[Route('/profile/{id}', name: 'app_profile')]
+    #[Route('/profile/{email}', name: 'app_profile')]
     public function show(
-        int $id,
+        string $email,
         HttpClientInterface $client,
         RequestStack $requestStack
     ): Response {
@@ -24,8 +24,8 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // Requête vers l’API pour obtenir les infos utilisateur
-        $response = $client->request('GET', "http://php/api/users/{$id}", [
+        // Requête vers l’API pour obtenir les infos utilisateur par email
+        $response = $client->request('GET', "http://php/api/users/email/{$email}", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,
             ],
@@ -37,6 +37,15 @@ class ProfileController extends AbstractController
         }
 
         $user = $response->toArray();
+        $connectedUserEmail = $session->get('user_email');
+
+        $tweetsResponse = $client->request('GET', "http://php/api/users/{$email}/tweets", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+            ],
+        ]);
+        
+        $tweets = $tweetsResponse->toArray();
 
         return $this->render('profile/show.html.twig', [
             'current_page' => 'profil',
@@ -46,6 +55,9 @@ class ProfileController extends AbstractController
             'tweetCount' => $user['tweetCount'],
             'likeCount' => $user['likeCount'],
             'retweetCount' => $user['retweetCount'],
+            'connectedUserEmail' => $connectedUserEmail,
+            'tweets' => $tweets,
         ]);
+        
     }
 }

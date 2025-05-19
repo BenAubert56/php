@@ -210,6 +210,8 @@
                 <ul class="tweet-feed">
                     {% for tweet in tweets %}
                         <li class="tweet">
+
+
                             {% if tweet.isRetweet and tweet.retweeter %}
                                 <div class="retweet-info">
                                     <i class="bi bi-arrow-repeat"></i> <em>{{ tweet.retweeter.username }} a retweeté</em>
@@ -276,7 +278,7 @@
             <ul>
                 {% for user in users %}
                     <li>
-                        <a href="{{ path('app_profile', { id: user.id }) }}">
+                        <a href="{{ path('app_profile', { email: user.email }) }}">
                             @{{ user.name }}
                         </a>
                     </li>

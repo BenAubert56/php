@@ -43,9 +43,9 @@ class UserController extends AbstractController
         return $this->json($users);     
     }
 
-    #[Route('/users/{id}', methods: ['GET'])]
+    #[Route('/users/email/{email}', methods: ['GET'])]
     #[OA\Get(
-        summary: 'Afficher un utilisateur',
+        summary: 'Afficher un utilisateur par email',
         responses: [
             new OA\Response(
                 response: 200,
@@ -59,13 +59,13 @@ class UserController extends AbstractController
             )
         ]
     )]
-    public function show(int $id, UserRepository $userRepo): JsonResponse
+    public function show(string $email, UserRepository $userRepo): JsonResponse
     {
-        $user = $userRepo->find($id);
+        $user = $userRepo->findOneByEmail($email);
         if (!$user) {
             return $this->json(new MessageResponse('Utilisateur introuvable'), 404);
         }
-
+    
         $response = $this->userService->getResponseByUser($user);
         return $this->json($response);
     }
