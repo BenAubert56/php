@@ -250,6 +250,12 @@
                                         <i class="bi bi-arrow-repeat"></i> Retweeter
                                     </button>
                                 </form>
+
+                                <form action="{{ path('tweet_delete', {id: tweet.id}) }}" method="post" style="display:inline;" onsubmit="return confirm('Supprimer ce tweet ?');">
+                                    <button type="submit" class="btn btn-delete">
+                                        🗑️ Supprimer
+                                    </button>
+                                </form>
                             </div>
 
                             <div class="comment-section mt-2">
