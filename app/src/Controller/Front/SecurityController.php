@@ -41,6 +41,7 @@ public function login(Request $request, SessionInterface $session): Response
                 $data = $response->toArray();
 
                 $session->set('auth_token', $data['token']);
+                $session->set('user_email', $email);
 
                 $this->addFlash('success', 'Connexion réussie');
                 return $this->redirectToRoute('app_feed');

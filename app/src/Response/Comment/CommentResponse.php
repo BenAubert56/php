@@ -28,7 +28,8 @@ class CommentResponse
         $this->createdAt = $comment->getCreatedAt()->format(DATE_ATOM);
         $this->author = new AuthorResponse(
             $comment->getAuthor()->getId(),
-            $comment->getAuthor()->getName()
+            $comment->getAuthor()->getName(),
+            $comment->getAuthor()->getEmail()
         );
     }
 }

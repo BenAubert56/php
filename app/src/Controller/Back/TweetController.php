@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -88,10 +89,19 @@ class TweetController extends AbstractController
         return $this->json($response);
     }
 
-    #[Route('/users/{id}/tweets', methods: ['GET'])]
+    #[Route('/users/{email}/tweets', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     #[OA\Get(
         summary: 'Lister les tweets d’un utilisateur',
+        parameters: [
+            new OA\Parameter(
+                name: 'email',
+                in: 'path',
+                required: true,
+                description: "Email de l'utilisateur",
+                schema: new OA\Schema(type: 'string', format: 'email')
+            )
+        ],
         responses: [
             new OA\Response(
                 response: 200,
@@ -104,13 +114,14 @@ class TweetController extends AbstractController
             new OA\Response(response: 404, description: 'Utilisateur introuvable')
         ]
     )]
-    public function userTweets(int $id, UserRepository $userRepo): JsonResponse
+    
+    public function userTweets(string $email, UserRepository $userRepo): JsonResponse
     {
-        $user = $userRepo->find($id);
+        $user = $userRepo->findOneByEmail($email);
         if (!$user) {
             return $this->json(new MessageResponse('Utilisateur introuvable'), 404);
         }
-
+    
         $currentUser = $this->getUser();
         $tweets = $this->tweetService->getUserTweets($user, $currentUser);
         return $this->json($tweets);

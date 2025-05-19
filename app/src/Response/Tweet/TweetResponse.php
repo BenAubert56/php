@@ -56,7 +56,9 @@ class TweetResponse
 
         $this->author = new AuthorResponse(
             $tweet->getAuthor()->getId(),
-            $tweet->getAuthor()->getName()
+            $tweet->getAuthor()->getName(),
+            $tweet->getAuthor()->getEmail(),
+
         );
 
         $this->comments = array_map(
@@ -69,7 +71,7 @@ class TweetResponse
 
         if ($isRetweet && $retweeter) {
             $this->isRetweet = true;
-            $this->retweeter = new AuthorResponse($retweeter->getId(), $retweeter->getName());
+            $this->retweeter = new AuthorResponse($retweeter->getId(), $retweeter->getName(), $retweeter->getEmail());
         }
     }
 }

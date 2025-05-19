@@ -190,6 +190,11 @@
         .user-list li:last-child {
             border-bottom: none;
         }
+
+        .tweet-actions .btn-delete:hover {
+            background-color: rgba(224, 36, 94, 0.1); /* même effet hover que les autres, mais en rouge */
+            color: #e0245e;
+        }
     </style>
 
     <div class="feed-container">
@@ -239,6 +244,14 @@
                                         <i class="bi bi-arrow-repeat"></i> Retweeter
                                     </button>
                                 </form>
+
+                                {% if connectedUserEmail == tweet.author.email %}
+                                    <form action="{{ path('tweet_delete', {id: tweet.id}) }}" method="post" style="display:inline;" onsubmit="return confirm('Supprimer ce tweet ?');">
+                                        <button type="submit" class="btn btn-delete">
+                                            🗑️ Supprimer
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
 
                             <div class="comment-section mt-2">
@@ -276,7 +289,7 @@
             <ul>
                 {% for user in users %}
                     <li>
-                        <a href="{{ path('app_profile', { id: user.id }) }}">
+                        <a href="{{ path('app_profile', { email: user.email }) }}">
                             @{{ user.name }}
                         </a>
                     </li>
