@@ -2,9 +2,9 @@
 
 namespace App\Controller\Back;
 
-use App\Dto\Request\CreateUserRequest;
 use App\Dto\Request\UpdateUserRequest;
 use App\Dto\Response\MessageResponse;
+use App\Response\User\UserResponse;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\UserService;
@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 #[OA\Tag(name: 'Users')]
 #[Route('/api')]
@@ -23,7 +24,19 @@ class UserController extends AbstractController
     public function __construct(private UserService $userService) {}
 
     #[Route('/users', methods: ['GET'])]
-    #[OA\Get(summary: 'Lister les utilisateurs')]
+    #[OA\Get(
+        summary: 'Lister les utilisateurs',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des utilisateurs',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: UserResponse::class))
+                )
+            )
+        ]
+    )]
     public function index(): JsonResponse
     {
         $users = $this->userService->list();
@@ -31,7 +44,21 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}', methods: ['GET'])]
-    #[OA\Get(summary: 'Afficher un utilisateur')]
+    #[OA\Get(
+        summary: 'Afficher un utilisateur',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Détail de l’utilisateur',
+                content: new OA\JsonContent(ref: new Model(type: UserResponse::class))
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function show(int $id, UserRepository $userRepo): JsonResponse
     {
         $user = $userRepo->find($id);
@@ -44,7 +71,29 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}', methods: ['PUT'])]
-    #[OA\Put(summary: 'Modifier un utilisateur')]
+    #[OA\Put(
+        summary: 'Modifier un utilisateur',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: new Model(type: UpdateUserRequest::class))
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Utilisateur mis à jour',
+                content: new OA\JsonContent(ref: new Model(type: UserResponse::class))
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Données invalides'
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function edit(
         int $id,
         Request $request,
@@ -70,7 +119,21 @@ class UserController extends AbstractController
     }
 
     #[Route('/users/{id}', methods: ['DELETE'])]
-    #[OA\Delete(summary: 'Supprimer un utilisateur')]
+    #[OA\Delete(
+        summary: 'Supprimer un utilisateur',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Utilisateur supprimé',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function delete(int $id, UserRepository $userRepo): JsonResponse
     {
         $user = $userRepo->find($id);

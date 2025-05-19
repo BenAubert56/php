@@ -3,6 +3,7 @@
 namespace App\Controller\Back;
 
 use App\Dto\Response\MessageResponse;
+use App\Response\User\UserResponse;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\FollowService;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 #[OA\Tag(name: 'Follows')]
 #[Route('/api')]
@@ -24,10 +26,28 @@ class FollowController extends AbstractController
 
     #[Route('/me/follow/{id}', name: 'me_follow', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Post(summary: 'S’abonner à un utilisateur en tant qu’utilisateur connecté')]
+    #[OA\Post(
+        summary: 'S’abonner à un utilisateur en tant qu’utilisateur connecté',
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Utilisateur suivi avec succès',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Abonnement invalide ou déjà existant',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function meFollow(int $id, UserRepository $userRepo): JsonResponse
     {
-        /** @var User $currentUser */
         $currentUser = $this->getUser();
 
         $targetUser = $userRepo->find($id);
@@ -48,10 +68,28 @@ class FollowController extends AbstractController
 
     #[Route('/me/unfollow/{id}', name: 'me_unfollow', methods: ['DELETE'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Delete(summary: 'Se désabonner d’un utilisateur en tant qu’utilisateur connecté')]
+    #[OA\Delete(
+        summary: 'Se désabonner d’un utilisateur en tant qu’utilisateur connecté',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Désabonnement réussi',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Vous ne suivez pas cet utilisateur',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function meUnfollow(int $id, UserRepository $userRepo): JsonResponse
     {
-        /** @var User $currentUser */
         $currentUser = $this->getUser();
 
         $targetUser = $userRepo->find($id);
@@ -68,7 +106,24 @@ class FollowController extends AbstractController
 
     #[Route('/users/{id}/followers', name: 'user_followers', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Get(summary: 'Lister les abonnés (followers) d’un utilisateur')]
+    #[OA\Get(
+        summary: 'Lister les abonnés (followers) d’un utilisateur',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des abonnés',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: UserResponse::class))
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function listFollowers(int $id, UserRepository $userRepo): JsonResponse
     {
         $user = $userRepo->find($id);
@@ -87,7 +142,24 @@ class FollowController extends AbstractController
 
     #[Route('/users/{id}/followings', name: 'user_followings', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Get(summary: 'Lister les utilisateurs suivis (followings) par un utilisateur')]
+    #[OA\Get(
+        summary: 'Lister les utilisateurs suivis (followings) par un utilisateur',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste des followings',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: UserResponse::class))
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Utilisateur introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function listFollowings(int $id, UserRepository $userRepo): JsonResponse
     {
         $user = $userRepo->find($id);
@@ -106,7 +178,19 @@ class FollowController extends AbstractController
 
     #[Route('/me/followers', name: 'me_followers', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Get(summary: 'Lister mes abonnés (followers)')]
+    #[OA\Get(
+        summary: 'Lister mes abonnés (followers)',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste de mes abonnés',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: UserResponse::class))
+                )
+            )
+        ]
+    )]
     public function myFollowers(): JsonResponse
     {
         /** @var User $user */
@@ -121,7 +205,19 @@ class FollowController extends AbstractController
 
     #[Route('/me/followings', name: 'me_followings', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Get(summary: 'Lister les utilisateurs que je suis (followings)')]
+    #[OA\Get(
+        summary: 'Lister les utilisateurs que je suis (followings)',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Liste de mes followings',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: new Model(type: UserResponse::class))
+                )
+            )
+        ]
+    )]
     public function myFollowings(): JsonResponse
     {
         /** @var User $user */
@@ -133,5 +229,4 @@ class FollowController extends AbstractController
 
         return $this->json($data);
     }
-
 }

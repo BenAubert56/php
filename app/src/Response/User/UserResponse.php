@@ -4,6 +4,9 @@ namespace App\Response\User;
 
 use App\Entity\User;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use App\Response\User\MiniUserResponse;
+
 
 #[OA\Schema(schema: 'UserResponse', description: 'Détails d’un utilisateur avec ses relations et stats')]
 class UserResponse
@@ -49,29 +52,16 @@ class UserResponse
 
     #[OA\Property(
         type: 'array',
-        items: new OA\Items(
-            type: 'object',
-            properties: [
-                new OA\Property(property: 'id', type: 'integer'),
-                new OA\Property(property: 'name', type: 'string'),
-                new OA\Property(property: 'email', type: 'string')
-            ]
-        )
+        items: new OA\Items(ref: new Model(type: MiniUserResponse::class))
     )]
     public array $followers;
 
     #[OA\Property(
         type: 'array',
-        items: new OA\Items(
-            type: 'object',
-            properties: [
-                new OA\Property(property: 'id', type: 'integer'),
-                new OA\Property(property: 'name', type: 'string'),
-                new OA\Property(property: 'email', type: 'string')
-            ]
-        )
+        items: new OA\Items(ref: new Model(type: MiniUserResponse::class))
     )]
     public array $followings;
+
 
     public function __construct(User $user)
     {

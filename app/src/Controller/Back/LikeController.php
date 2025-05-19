@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use App\Dto\Response\MessageResponse;
 
 #[OA\Tag(name: 'Likes')]
@@ -20,7 +21,26 @@ class LikeController extends AbstractController
 
     #[Route('/tweets/{id}/like', name: 'tweet_like', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Post(summary: 'Liker un tweet')]
+    #[OA\Post(
+        summary: 'Liker un tweet',
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Tweet liké avec succès',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Tweet déjà liké',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Tweet introuvable',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function like(int $id, TweetRepository $tweetRepo): JsonResponse
     {
         $tweet = $tweetRepo->find($id);
@@ -39,7 +59,21 @@ class LikeController extends AbstractController
 
     #[Route('/tweets/{id}/unlike', name: 'tweet_unlike', methods: ['DELETE'])]
     #[IsGranted('ROLE_USER')]
-    #[OA\Delete(summary: 'Unliker un tweet')]
+    #[OA\Delete(
+        summary: 'Unliker un tweet',
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Tweet disliké avec succès',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Tweet introuvable ou Like non trouvé',
+                content: new OA\JsonContent(ref: new Model(type: MessageResponse::class))
+            )
+        ]
+    )]
     public function unlike(int $id, TweetRepository $tweetRepo): JsonResponse
     {
         $tweet = $tweetRepo->find($id);

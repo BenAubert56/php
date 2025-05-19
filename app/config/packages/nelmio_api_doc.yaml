@@ -5,11 +5,6 @@ nelmio_api_doc:
             description: La documentation de l’API des tweets
             version: 1.0.0
         components:
-            schemas:
-                TweetResponse: 
-                    $ref: '../../src/Response/TweetResponse.php'
-                AuthorResponse:
-                    $ref: '../../src/Response/AuthorResponse.php'
             securitySchemes:
                 BearerAuth:
                     type: http

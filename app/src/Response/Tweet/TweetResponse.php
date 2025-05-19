@@ -7,6 +7,8 @@ use App\Entity\User;
 use OpenApi\Attributes as OA;
 use App\Response\AuthorResponse;
 use App\Response\Comment\CommentResponse;
+use Nelmio\ApiDocBundle\Annotation\Model;
+
 
 #[OA\Schema(schema: 'TweetResponse', description: 'Représentation d’un tweet')]
 class TweetResponse
@@ -23,7 +25,10 @@ class TweetResponse
     #[OA\Property(type: 'object', ref: '#/components/schemas/AuthorResponse')]
     public AuthorResponse $author;
 
-    #[OA\Property(type: 'array', items: new OA\Items(ref: '#/components/schemas/CommentResponse'))]
+    #[OA\Property(
+        type: 'array',
+        items: new OA\Items(ref: new Model(type: CommentResponse::class))
+    )]
     public array $comments;
 
     #[OA\Property(type: 'integer', example: 5)]
@@ -35,7 +40,7 @@ class TweetResponse
     #[OA\Property(type: 'boolean', example: false)]
     public bool $isRetweet = false;
 
-    #[OA\Property(ref: '#/components/schemas/AuthorResponse', nullable: true)]
+    #[OA\Property(ref: new Model(type: AuthorResponse::class))]
     public ?AuthorResponse $retweeter = null;
 
     public function __construct(
